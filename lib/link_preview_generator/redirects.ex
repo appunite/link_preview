@@ -1,4 +1,4 @@
-defmodule LinkPreviewGenerator.Redirector do
+defmodule LinkPreviewGenerator.Redirects do
   @moduledoc """
     TODO
   """

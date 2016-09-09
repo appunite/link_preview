@@ -21,22 +21,41 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   end
 
   def images(page, body) do
-    images = map_image_urls(body, page.host_url)
+    images = if Application.get_env(:link_preview_generator, :force_images_absolute_url, false) do
+      map_image_urls(body, page.website_url)
+    else
+      map_image_urls(body)
+    end
 
     page |> update_images(images)
   end
 
-  defp map_image_urls(body, host_url) do
+  defp map_image_urls(body) do
     body
     |> Floki.attribute("img", "src")
-    |> Enum.map(&force_absolute_url(&1, host_url))
     |> Enum.map(&(%{url: &1}))
   end
 
-  defp force_absolute_url(url, host_url) do
-    case Regex.match?(~r/.+\..+\/.+/, url) do
-      true -> url
-      false -> host_url <> url
+  defp map_image_urls(body, website_url) do
+    body
+    |> Floki.attribute("img", "src")
+    |> Enum.map(&force_absolute_url(&1, website_url))
+    |> Enum.reject(&Kernel.is_nil(&1))
+    |> Enum.map(&(%{url: &1}))
+  end
+
+  defp force_absolute_url(url, website_url) do
+    cond do
+      URI.parse(url).scheme != nil ->           #valid absolute url
+        url
+      Regex.match?(~r/\A\/\/.*/, url) ->        #absolute url without a scheme started with double
+        URI.parse(website_url).scheme <> url
+      Regex.match?(~r/\A\/[^\/].*/, url) ->     #relative url started with single /
+        website_url <> url
+      Regex.match?(~r/\A[^\.]+\/.*/, url) ->    #relative url without initial /
+        website_url <> "/" <> url
+      true ->                                   #anything that wasn't handled properly above
+        nil
     end
   end
 

@@ -30,20 +30,16 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
     page |> update_description(description)
   end
 
-  #TODO it shouldn't be restricted to first
   @doc """
-    Get page image based on first encountered og:image property.
+    Get page images based on og:image property.
   """
   def images(page, body) do
-    image_url =
+    images =
       body
       |> Floki.find("[property=og:image]")
       |> Floki.attribute("content")
-      |> List.first
+      |> Enum.map(&(%{url: &1}))
 
-    page |> update_image(image_url)
+    page |> update_images(images)
   end
-
-  defp update_image(page, nil), do: page
-  defp update_image(page, url), do: update_images(page, [%{url: url}])
 end

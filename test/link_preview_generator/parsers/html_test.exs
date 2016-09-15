@@ -25,7 +25,7 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
     end
 
     test "pessimistic case" do
-      assert Html.title(@page, @opengraph) == %Page{@page | title: nil}
+      assert Html.title(@page, @opengraph) == @page
     end
   end
 
@@ -41,7 +41,7 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
     end
 
     test "pessimistic case" do
-      assert Html.description(@page, @opengraph) == %Page{@page | description: nil}
+      assert Html.description(@page, @opengraph) == @page
     end
   end
 
@@ -94,7 +94,7 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
     end
 
     test "pessimistic case" do
-      assert Html.images(@page, @opengraph) == %Page{@page | images: []}
+      assert Html.images(@page, @opengraph) == @page
     end
   end
 

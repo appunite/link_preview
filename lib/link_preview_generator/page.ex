@@ -4,7 +4,13 @@ defmodule LinkPreviewGenerator.Page do
     to initialize it.
   """
 
-  defstruct [:original_url, :website_url, :title, :description, :images]
+  defstruct [
+    original_url: nil,
+    website_url: nil,
+    title: nil,
+    description: nil,
+    images: []
+  ]
 
   @type t :: %__MODULE__{
     original_url: String.t | nil,
@@ -25,8 +31,7 @@ defmodule LinkPreviewGenerator.Page do
   def new(current_url, original_url) do
     %__MODULE__{
       original_url: original_url,
-      website_url: fetch_website_url(current_url),
-      images: []
+      website_url: fetch_website_url(current_url)
     }
   end
 

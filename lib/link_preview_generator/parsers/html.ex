@@ -49,29 +49,48 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     * :force_images_absolute_url - try to add website url from `LinkPreviewGenerator.Page`
       struct to all relative urls, then remove remaining relative urls from list;
       default: false
+    * :force_images_url_schema - try to add http:// to urls without schema, then remove
+      all invalid urls;
+      default: false
   """
   def images(page, body) do
-    images = if Application.get_env(:link_preview_generator, :force_images_absolute_url, false) do
-      map_image_urls(body, page.website_url)
-    else
-      map_image_urls(body)
-    end
+    images =
+      body
+      |> Floki.attribute("img", "src")
+      |> check_force_absolute_url(page)
+      |> check_force_url_schema
+      |> Enum.map(&(%{url: &1}))
 
     page |> update_images(images)
   end
 
-  defp map_image_urls(body) do
-    body
-    |> Floki.attribute("img", "src")
-    |> Enum.map(&(%{url: &1}))
+  defp check_force_absolute_url(urls, page) do
+    if Application.get_env(:link_preview_generator, :force_images_absolute_url, false) do
+      urls
+      |> Enum.map(&force_absolute_url(&1, page.website_url))
+      |> Enum.reject(&Kernel.is_nil(&1))
+    else
+      urls
+    end
   end
 
-  defp map_image_urls(body, website_url) do
-    body
-    |> Floki.attribute("img", "src")
-    |> Enum.map(&force_absolute_url(&1, website_url))
-    |> Enum.reject(&Kernel.is_nil(&1))
-    |> Enum.map(&(%{url: &1}))
+  defp check_force_url_schema(urls) do
+    if Application.get_env(:link_preview_generator, :force_images_url_schema, false) do
+      urls
+      |> Enum.map(&force_schema(&1))
+      |> Enum.reject(&Kernel.is_nil(&1))
+    else
+      urls
+    end
+  end
+
+  defp force_schema("http://" <> _ = url), do: url
+  defp force_schema("https://" <> _ = url), do: url
+  defp force_schema(url) do
+    case Requests.valid?("http://" <> url) do
+      {:ok, new_url} -> new_url
+      {:error, _}    -> nil
+    end
   end
 
   defp force_absolute_url(url, website_url) do

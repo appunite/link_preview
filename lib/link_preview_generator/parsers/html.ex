@@ -10,7 +10,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     Get page title based on first encountered title tag.
 
     Config options:
-    * :friendly_strings - remove leading and trailing whitespaces, change
+    * `:friendly_strings` - remove leading and trailing whitespaces, change
       rest of newline characters to space and replace all multiple spaces
       by single space;
       default: true
@@ -31,7 +31,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     Preference: h1> h2 > h3 > h4 > h5 > h6
 
     Config options:
-    * :friendly_strings - remove leading and trailing whitespaces, change
+    * `:friendly_strings` - remove leading and trailing whitespaces, change
       rest of newline characters to space and replace all multiple spaces
       by single space;
       default: true
@@ -46,12 +46,17 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     Get images based on img tags.
 
     Config options:
-    * :force_images_absolute_url - try to add website url from `LinkPreviewGenerator.Page`
+    * `:force_images_absolute_url` - try to add website url from `LinkPreviewGenerator.Page`
       struct to all relative urls, then remove remaining relative urls from list;
       default: false
-    * :force_images_url_schema - try to add http:// to urls without schema, then remove
+    * `:force_images_url_schema` - try to add http:// to urls without schema, then remove
       all invalid urls;
       default: false
+    * `:filter_small_images` - if set to true it filters images with at least one dimension
+      smaller than 100px;
+      if set to integer value it filters images with at least one dimension smaller than that
+      integer;
+      default: false;
   """
   def images(page, body) do
     images =
@@ -59,9 +64,30 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       |> Floki.attribute("img", "src")
       |> check_force_absolute_url(page)
       |> check_force_url_schema
+      |> check_filter_small_images
       |> Enum.map(&(%{url: &1}))
 
     page |> update_images(images)
+  end
+
+  defp get_text(nil), do: nil
+  defp get_text(choosen) do
+    if Application.get_env(:link_preview_generator, :friendly_strings, true) do
+      choosen |> Floki.text |> String.trim |> String.replace(~r/\n|\r|\r\n/, " ") |> String.replace(~r/\ +/, " ")
+    else
+      choosen |> Floki.text
+    end
+  end
+
+  defp search_h(_body, 7), do: nil
+  defp search_h(body, level) do
+    description =
+      body
+      |> Floki.find("h#{level}")
+      |> List.first
+      |> get_text
+
+    description || search_h(body, level + 1)
   end
 
   defp check_force_absolute_url(urls, page) do
@@ -84,14 +110,21 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     end
   end
 
-  defp force_schema("http://" <> _ = url), do: url
-  defp force_schema("https://" <> _ = url), do: url
-  defp force_schema(url) do
-    case Requests.valid?("http://" <> url) do
-      {:ok, new_url} -> new_url
-      {:error, _}    -> nil
+  defp check_filter_small_images(urls) do
+    case Application.get_env(:link_preview_generator, :filter_small_images, false) do
+      false ->
+        urls
+      true ->
+        urls
+        |> Enum.map(&filter_small_images(&1, 100))
+        |> Enum.reject(&Kernel.is_nil(&1))
+      value ->
+        urls
+        |> Enum.map(&filter_small_images(&1, value))
+        |> Enum.reject(&Kernel.is_nil(&1))
     end
   end
+
 
   defp force_absolute_url(url, website_url) do
     with     {:error, _} <- Requests.valid?(url),
@@ -106,23 +139,30 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     end
   end
 
-  defp search_h(_body, 7), do: nil
-  defp search_h(body, level) do
-    description =
-      body
-      |> Floki.find("h#{level}")
-      |> List.first
-      |> get_text
-
-    description || search_h(body, level + 1)
+  defp force_schema("http://" <> _ = url), do: url
+  defp force_schema("https://" <> _ = url), do: url
+  defp force_schema(url) do
+    case Requests.valid?("http://" <> url) do
+      {:ok, new_url} -> new_url
+      {:error, _}    -> nil
+    end
   end
 
-  defp get_text(nil), do: nil
-  defp get_text(choosen) do
-    if Application.get_env(:link_preview_generator, :friendly_strings, true) do
-      choosen |> Floki.text |> String.trim |> String.replace(~r/\n|\r|\r\n/, " ") |> String.replace(~r/\ +/, " ")
+  defp filter_small_images(url, min_size) do
+    with       {:ok, %HTTPoison.Response{body: body}} <- HTTPoison.get(url),
+                                 {:ok, tempfile_path} <- Tempfile.random("link_preview_generator"),
+                                                  :ok <- File.write(tempfile_path, body),
+                               %Mogrify.Image{} = raw <- Mogrify.open(tempfile_path),
+         %Mogrify.Image{width: width, height: height} <- Mogrify.verbose(raw),
+                                    smaller_dimension <- Enum.min([width, height]),
+                                                 true <- smaller_dimension > min_size
+    do
+      url
     else
-      choosen |> Floki.text
+      _ -> nil
     end
+  catch
+    #filter url if mogrify cannot collect its size data
+    _, _ -> nil
   end
 end

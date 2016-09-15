@@ -73,18 +73,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   end
 
   defp force_absolute_url(url, website_url) do
-    cond do
-      URI.parse(url).scheme != nil ->           #valid absolute url
-        url
-      Regex.match?(~r/\A\/\/.*/, url) ->        #absolute url without a scheme started with double
-        URI.parse(website_url).scheme <> url
-      Regex.match?(~r/\A\/[^\/].*/, url) ->     #relative url started with single /
-        website_url <> url
-      Regex.match?(~r/\A[^\.]+\/.*/, url) ->    #relative url without initial /
-        website_url <> "/" <> url
-      true ->                                   #anything that wasn't handled properly above
-        nil
-    end
+    #TODO better implementation
   end
 
   defp search_h(_body, 7), do: nil

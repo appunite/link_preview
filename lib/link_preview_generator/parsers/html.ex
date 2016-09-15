@@ -6,6 +6,12 @@ defmodule LinkPreviewGenerator.Parsers.Html do
 
   @doc """
     Get page title based on first encountered title tag.
+
+    Config options:
+    * :friendly_strings - remove leading and trailing whitespaces, change
+      rest of newline characters to space and replace all multiple spaces
+      by single space;
+      default: true
   """
   def title(page, body) do
     title =
@@ -21,6 +27,12 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     Get page description based on first encountered h1..h6 tag.
 
     Preference: h1> h2 > h3 > h4 > h5 > h6
+
+    Config options:
+    * :friendly_strings - remove leading and trailing whitespaces, change
+      rest of newline characters to space and replace all multiple spaces
+      by single space;
+      default: true
   """
   def description(page, body) do
     description = search_h(body, 1)
@@ -87,5 +99,11 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   end
 
   defp get_text(nil), do: nil
-  defp get_text(choosen), do: choosen |> Floki.text
+  defp get_text(choosen) do
+    if Application.get_env(:link_preview_generator, :friendly_strings, true) do
+      choosen |> Floki.text |> String.trim |> String.replace(~r/\n|\r|\r\n/, " ") |> String.replace(~r/\ +/, " ")
+    else
+      choosen |> Floki.text
+    end
+  end
 end

@@ -27,19 +27,22 @@ defmodule LinkPreviewGenerator.Page do
     * `current_url` - final url after redirects and/or normalization
     * `original_url` - original url provided by user
   """
-  @spec new(String.t, String.t) :: t
-  def new(current_url, original_url) do
+  @spec new(String.t, String.t | nil) :: t
+  def new(current_url, original_url \\ nil) do
     %__MODULE__{
-      original_url: original_url,
-      website_url: fetch_website_url(current_url)
+      original_url: original_url || current_url,
+      website_url: website_url(current_url)
     }
   end
 
-  defp fetch_website_url(url) do
-    case URI.parse(url) do
-      %URI{host: nil} -> nil
-      %URI{scheme: nil, host: host} -> host
-      %URI{scheme: scheme, host: host} -> scheme <> "://" <> host
+  def website_url(url) do
+    path = cond do
+      String.match?(url, ~r/\Ahttp(s)?:\/\/([^\/]+\.)+[^\/]+/) ->
+        String.replace(url, ~r/\Ahttp(s)?:\/\/([^\/]+\.)+[^\/]+/, "")
+      String.match?(url, ~r/\A([^\/]+\.)+[^\/]+/) ->
+        String.replace(url, ~r/\A([^\/]+\.)+[^\/]+/, "")
     end
+
+    url |> String.replace_suffix(path, "")
   end
 end

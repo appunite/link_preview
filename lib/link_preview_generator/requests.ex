@@ -11,6 +11,7 @@ defmodule LinkPreviewGenerator.Requests do
     `LinkPreviewGenerator.Page` struct.
   """
   @spec handle_redirects(String.t | LinkPreviewGenerator.failure, String.t) :: t | LinkPreviewGenerator.failure
+  def handle_redirects(url, original_url \\ nil)
   def handle_redirects({:error, reason}, _original_url), do: {:error, reason}
   def handle_redirects(url, original_url) do
     case HTTPoison.get(url) do

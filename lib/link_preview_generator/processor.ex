@@ -2,7 +2,7 @@ defmodule LinkPreviewGenerator.Processor do
   @moduledoc """
     TODO
   """
-  alias LinkPreviewGenerator.{Requests, OriginalUrl}
+  alias LinkPreviewGenerator.Requests
   alias LinkPreviewGenerator.Parsers.{Basic, Opengraph, Html}
 
 
@@ -11,8 +11,7 @@ defmodule LinkPreviewGenerator.Processor do
   """
   @spec call(String.t) :: LinkPreviewGenerator.success | LinkPreviewGenerator.failure
   def call(url) do
-    with  {:ok, processed_url}   <- OriginalUrl.normalize_if_allowed(url),
-          {:ok, response, page}  <- Requests.handle_redirects(processed_url, url),
+    with  {:ok, response, page}  <- Requests.handle_redirects(url),
           {:ok, parsed_body}     <- parse_body(response.body)
     do
       parsers = Application.get_env(:link_preview_generator, :parsers, [Opengraph, Html])

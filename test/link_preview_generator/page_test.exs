@@ -2,25 +2,48 @@ defmodule LinkPreviewGenerator.PageTest do
   alias LinkPreviewGenerator.Page
   use ExUnit.Case
 
-  @valid_uri "http://example.com/current"
-  @website_url "http://example.com"
-
-  @invalid_uri "example.com/current"
+  @original_url "http://example.com/current"
 
   describe "#new" do
-    test "with valid_uri" do
-      assert Page.new(@valid_uri, @valid_uri) == %Page{
-        original_url: @valid_uri,
-        website_url: @website_url,
-        images: []
+    test "current url with http schema and path" do
+      assert Page.new("http://example.com/path/to/something", @original_url) == %Page{
+        original_url: @original_url,
+        website_url: "http://example.com",
       }
     end
 
-    test "with invalid_uri" do
-      assert Page.new(@invalid_uri, @invalid_uri) == %Page{
-        original_url: @invalid_uri,
-        website_url: nil,
-        images: []
+    test "current url with http schema and without path" do
+      assert Page.new("http://example.com", @original_url) == %Page{
+        original_url: @original_url,
+        website_url: "http://example.com",
+      }
+    end
+
+    test "current url with https schema and path" do
+      assert Page.new("https://example.com/path/to/something", @original_url) == %Page{
+        original_url: @original_url,
+        website_url: "https://example.com",
+      }
+    end
+
+    test "current url with https schema and without path" do
+      assert Page.new("https://example.com", @original_url) == %Page{
+        original_url: @original_url,
+        website_url: "https://example.com",
+      }
+    end
+
+    test "current url without schema but with path" do
+      assert Page.new("example.com/path/to/something", @original_url) == %Page{
+        original_url: @original_url,
+        website_url: "example.com",
+      }
+    end
+
+    test "current url without schema and path" do
+      assert Page.new("example.com", @original_url) == %Page{
+        original_url: @original_url,
+        website_url: "example.com",
       }
     end
   end

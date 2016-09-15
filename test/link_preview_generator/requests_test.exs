@@ -1,7 +1,5 @@
 defmodule LinkPreviewGenerator.RequestsTest do
   alias LinkPreviewGenerator.{Page, Requests}
-  alias HTTPoison.Response
-
   use ExUnit.Case
 
   import Mock
@@ -9,12 +7,12 @@ defmodule LinkPreviewGenerator.RequestsTest do
   @url "http://example.com/"
   @location "http://example2.com/"
 
-  @ok %Response{status_code: 200}
-  @bad_request %Response{status_code: 400}
-  @moved_permamently %Response{status_code: 301, headers: [{"Location", @location}]}
-  @found %Response{status_code: 302, headers: [{"location", @location}]}
+  @ok %HTTPoison.Response{status_code: 200}
+  @bad_request %HTTPoison.Response{status_code: 400}
+  @moved_permamently %HTTPoison.Response{status_code: 301, headers: [{"Location", @location}]}
+  @found %HTTPoison.Response{status_code: 302, headers: [{"location", @location}]}
 
-  @redirect_without_location %Response{status_code: 301}
+  @redirect_without_location %HTTPoison.Response{status_code: 301}
 
   describe "#handle_redirects" do
     test "returns success tuple if response status is 200" do

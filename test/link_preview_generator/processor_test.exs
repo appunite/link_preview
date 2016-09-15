@@ -1,6 +1,7 @@
 defmodule LinkPreviewGenerator.ProcessorTest do
   alias LinkPreviewGenerator.Processor
   use ExUnit.Case
+
   import Mock
 
   @tag :excluded

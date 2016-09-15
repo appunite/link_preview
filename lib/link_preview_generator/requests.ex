@@ -29,6 +29,23 @@ defmodule LinkPreviewGenerator.Requests do
     end
   end
 
+  @doc """
+    Check if given url leads to response with non-empty body
+  """
+  @spec valid?(String.t) :: {:ok, String.t} | {:error, atom}
+  def valid?(url) do
+    case HTTPoison.get(url, [], follow_redirect: true) do
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:error, reason}
+      {:ok, %HTTPoison.Response{body: nil}} ->
+        {:error, :missing_body}
+      {:ok, %HTTPoison.Response{body: ""}} ->
+        {:error, :missing_body}
+      {:ok, %HTTPoison.Response{}} ->
+        {:ok, url}
+    end
+  end
+
   defp get_location(headers) do
     cond do
       List.keymember?(headers, "Location", 0) ->

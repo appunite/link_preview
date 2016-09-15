@@ -3,6 +3,8 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
   alias LinkPreviewGenerator.Page
   use ExUnit.Case
 
+  import Mock
+
   @html File.read!("test/fixtures/html_example.html") |> Floki.parse
   @opengraph File.read!("test/fixtures/opengraph_example.html") |> Floki.parse
 
@@ -44,23 +46,26 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
   end
 
   describe "#images" do
-    test "optimistic case without :force_images_absolute_url" do
+    test "optimistic case without additional options" do
       assert Html.images(@page, @html).images == [
         %{url: "http://example.com/images/html1.jpg"},
-        %{url: "//example.com/images/html2.jpg"},
-        %{url: "example.com/images/html3.jpg"},
-        %{url: "/images/html4.jpg"},
-        %{url: "images/html5.jpg"}
+        %{url: "example.com/images/html2.jpg"},
+        %{url: "/images/html3.jpg"},
+        %{url: "images/html4.jpg"}
       ]
     end
 
-    @tag :excluded
     test "optimistic case with :force_images_absolute_url" do
-      Application.put_env(:link_preview_generator, :force_images_absolute_url, true)
+      with_mock HTTPoison, [get: fn(url, _, _) -> response_helper(url) end] do
+        Application.put_env(:link_preview_generator, :force_images_absolute_url, true)
 
-      assert Html.images(@page, @html).images == [
-        #TODO
-      ]
+        assert Html.images(@page, @html).images == [
+          %{url: "http://example.com/images/html1.jpg"},
+          %{url: "example.com/images/html2.jpg"},
+          %{url: "http://example.com/images/html3.jpg"},
+          %{url: "http://example.com/images/html4.jpg"}
+        ]
+      end
     end
 
     test "pessimistic case" do
@@ -75,5 +80,16 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
     end
 
     {:ok, tags}
+  end
+
+  defp response_helper(url) do
+    case url do
+      "http://example.com" <> _ ->
+        {:ok, %HTTPoison.Response{body: "non-empty"}}
+      "example.com" <> _ ->
+        {:ok, %HTTPoison.Response{body: "non-empty"}}
+      _ ->
+        {:error, %HTTPoison.Error{reason: :badarg}}
+    end
   end
 end

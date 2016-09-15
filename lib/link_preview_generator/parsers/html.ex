@@ -2,6 +2,8 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   @moduledoc """
     Parser implementation based on html tags.
   """
+  alias LinkPreviewGenerator.Requests
+
   use LinkPreviewGenerator.Parsers.Basic
 
   @doc """
@@ -73,7 +75,16 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   end
 
   defp force_absolute_url(url, website_url) do
-    #TODO better implementation
+    with     {:error, _} <- Requests.valid?(url),
+                  prefix <- website_url |> String.replace_suffix("/", ""),
+                  suffix <- url |> String.replace_prefix("/", ""),
+          {:ok, new_url} <- Requests.valid?(prefix <> "/" <> suffix)
+    do
+      new_url
+    else
+      {:ok, old_url} -> old_url
+      {:error, _}    -> nil
+    end
   end
 
   defp search_h(_body, 7), do: nil

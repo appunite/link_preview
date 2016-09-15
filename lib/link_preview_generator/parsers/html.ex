@@ -130,7 +130,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     with     {:error, _} <- Requests.valid?(url),
                   prefix <- website_url |> String.replace_suffix("/", ""),
                   suffix <- url |> String.replace_prefix("/", ""),
-          {:ok, new_url} <- Requests.valid?(prefix <> "/" <> suffix)
+          {:ok, new_url} <- Requests.valid_image?(prefix <> "/" <> suffix)
     do
       new_url
     else
@@ -142,14 +142,15 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   defp force_schema("http://" <> _ = url), do: url
   defp force_schema("https://" <> _ = url), do: url
   defp force_schema(url) do
-    case Requests.valid?("http://" <> url) do
+    case Requests.valid_image?("http://" <> url) do
       {:ok, new_url} -> new_url
       {:error, _}    -> nil
     end
   end
 
   defp filter_small_images(url, min_size) do
-    with       {:ok, %HTTPoison.Response{body: body}} <- HTTPoison.get(url),
+    with                                     {:ok, _} <- Requests.valid_image?(url),
+               {:ok, %HTTPoison.Response{body: body}} <- HTTPoison.get(url),
                                  {:ok, tempfile_path} <- Tempfile.random("link_preview_generator"),
                                                   :ok <- File.write(tempfile_path, body),
                                %Mogrify.Image{} = raw <- Mogrify.open(tempfile_path),

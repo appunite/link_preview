@@ -31,19 +31,36 @@ defmodule LinkPreviewGenerator.Requests do
   end
 
   @doc """
-    Check if given url leads to response with non-empty body
+    Check if given url leads somewhere
   """
   @spec valid?(String.t) :: {:ok, String.t} | {:error, atom}
   def valid?(url) do
-    case HTTPoison.get(url, [], follow_redirect: true) do
+    case HTTPoison.head(url, [], follow_redirect: true) do
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
-      {:ok, %HTTPoison.Response{body: nil}} ->
-        {:error, :missing_body}
-      {:ok, %HTTPoison.Response{body: ""}} ->
-        {:error, :missing_body}
-      {:ok, %HTTPoison.Response{}} ->
+      {:ok, %HTTPoison.Response{status_code: 200}} ->
         {:ok, url}
+      _ ->
+        {:error, :invalid_url}
+    end
+  end
+
+  @doc """
+    Check if given url leads to image
+  """
+  @spec valid_image?(String.t) :: {:ok, String.t} | {:error, atom}
+  def valid_image?(url) do
+    with {:ok, %HTTPoison.Response{status_code: 200, headers: headers}} <- HTTPoison.head(url, [], follow_redirect: true),
+                                                                   true <- List.keymember?(headers, "Content-Type", 0),
+                                                           content_type <- headers |> List.keyfind("Content-Type", 0) |> elem(1),
+                                                                   true <- String.match?(content_type, ~r/\Aimage\//)
+    do
+      {:ok, url}
+    else
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:error, reason}
+      _ ->
+        {:error, :invalid_image}
     end
   end
 

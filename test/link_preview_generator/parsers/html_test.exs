@@ -56,7 +56,7 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
     end
 
     test "optimistic case with :force_images_absolute_url" do
-      with_mock HTTPoison, [get: fn(url, _, _) -> response_helper(url) end] do
+      with_mock HTTPoison, [head: fn(url, _, _) -> response_helper(url) end] do
         Application.put_env(:link_preview_generator, :force_images_absolute_url, true)
 
         assert Html.images(@page, @html).images == [
@@ -69,7 +69,7 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
     end
 
     test "optimistic case with :force_images_url_schema" do
-      with_mock HTTPoison, [get: fn(url, _, _) -> response_helper(url) end] do
+      with_mock HTTPoison, [head: fn(url, _, _) -> response_helper(url) end] do
         Application.put_env(:link_preview_generator, :force_images_url_schema, true)
 
         assert Html.images(@page, @html).images == [
@@ -80,7 +80,7 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
     end
 
     test "optimistic case with all additional options" do
-      with_mock HTTPoison, [get: fn(url, _, _) -> response_helper(url) end] do
+      with_mock HTTPoison, [head: fn(url, _, _) -> response_helper(url) end] do
         Application.put_env(:link_preview_generator, :force_images_absolute_url, true)
         Application.put_env(:link_preview_generator, :force_images_url_schema, true)
 
@@ -111,9 +111,9 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
   defp response_helper(url) do
     case url do
       "http://example.com" <> _ ->
-        {:ok, %HTTPoison.Response{body: "non-empty"}}
+        {:ok, %HTTPoison.Response{status_code: 200, headers: [{"Content-Type", "image/jpg"}]}}
       "example.com" <> _ ->
-        {:ok, %HTTPoison.Response{body: "non-empty"}}
+        {:ok, %HTTPoison.Response{status_code: 200, headers: [{"Content-Type", "image/jpg"}]}}
       _ ->
         {:error, %HTTPoison.Error{reason: :badarg}}
     end

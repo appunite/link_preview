@@ -1,6 +1,6 @@
-defmodule LinkPreviewGenerator.Redirects do
+defmodule LinkPreviewGenerator.Requests do
   @moduledoc """
-    Module providing functions to handle all kind of request redirects.
+    Module providing functions to handle needed requests.
   """
   alias LinkPreviewGenerator.Page
 
@@ -10,18 +10,18 @@ defmodule LinkPreviewGenerator.Redirects do
     After all redirects returns response and newly generated
     `LinkPreviewGenerator.Page` struct.
   """
-  @spec handle(String.t | LinkPreviewGenerator.failure, String.t) :: t | LinkPreviewGenerator.failure
-  def handle({:error, reason}, _original_url), do: {:error, reason}
-  def handle(url, original_url) do
+  @spec handle_redirects(String.t | LinkPreviewGenerator.failure, String.t) :: t | LinkPreviewGenerator.failure
+  def handle_redirects({:error, reason}, _original_url), do: {:error, reason}
+  def handle_redirects(url, original_url) do
     case HTTPoison.get(url) do
       {:ok, %HTTPoison.Response{status_code: 301} = response} ->
         location = response |> Map.get(:headers) |> get_location
 
-        handle(location, original_url || url)
+        handle_redirects(location, original_url || url)
       {:ok, %HTTPoison.Response{status_code: 302} = response} ->
         location = response |> Map.get(:headers) |> get_location
 
-        handle(location, original_url || url)
+        handle_redirects(location, original_url || url)
       {:ok, %HTTPoison.Response{status_code: 200} = response} ->
         {:ok, response, Page.new(url, original_url)}
       _ ->

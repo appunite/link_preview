@@ -1,12 +1,17 @@
 defmodule LinkPreviewGenerator.OriginalUrl do
   @moduledoc """
-    TODO
+    Utilities for original url optional transformation.
   """
 
   @type t :: {:ok, String.t}
 
   @doc """
-    TODO
+    Depending on config returns given url or his normalized version.
+
+    Config options:
+    * :normalize_urls - try to make given url valid uri by adding
+      schema and/or path if necessary;
+      default: false
   """
   @spec normalize_if_allowed(String.t) :: t | LinkPreviewGenerator.failure
   def normalize_if_allowed(url) do

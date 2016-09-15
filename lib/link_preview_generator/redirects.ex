@@ -1,13 +1,14 @@
 defmodule LinkPreviewGenerator.Redirects do
   @moduledoc """
-    TODO
+    Module providing functions to handle all kind of request redirects.
   """
   alias LinkPreviewGenerator.Page
 
   @type t :: {:ok, HTTPoison.Response.t, LinkPreviewGenerator.t}
 
   @doc """
-    TODO
+    After all redirects returns response and newly generated
+    `LinkPreviewGenerator.Page` struct.
   """
   @spec handle(String.t | LinkPreviewGenerator.failure, String.t) :: t | LinkPreviewGenerator.failure
   def handle({:error, reason}, _original_url), do: {:error, reason}

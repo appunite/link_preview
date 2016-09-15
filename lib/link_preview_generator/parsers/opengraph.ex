@@ -1,9 +1,12 @@
 defmodule LinkPreviewGenerator.Parsers.Opengraph do
   @moduledoc """
-    TODO
+    Parser implementation based on opengraph.
   """
   use LinkPreviewGenerator.Parsers.Basic
 
+  @doc """
+    Get page title based on first encountered og:title property.
+  """
   def title(page, body) do
     title =
       body
@@ -14,6 +17,9 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
     page |> update_title(title)
   end
 
+  @doc """
+    Get page description based on first encountered og:description property.
+  """
   def description(page, body) do
     description =
       body
@@ -24,6 +30,10 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
     page |> update_description(description)
   end
 
+  #TODO it shouldn't be restricted to first
+  @doc """
+    Get page image based on first encountered og:image property.
+  """
   def images(page, body) do
     image_url =
       body

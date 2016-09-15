@@ -1,9 +1,12 @@
 defmodule LinkPreviewGenerator.Parsers.Html do
   @moduledoc """
-    TODO
+    Parser implementation based on html tags.
   """
   use LinkPreviewGenerator.Parsers.Basic
 
+  @doc """
+    Get page title based on first encountered title tag.
+  """
   def title(page, body) do
     title =
       body
@@ -14,12 +17,25 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     page |> update_title(title)
   end
 
+  @doc """
+    Get page description based on first encountered h1..h6 tag.
+
+    Preference: h1> h2 > h3 > h4 > h5 > h6
+  """
   def description(page, body) do
     description = search_h(body, 1)
 
     page |> update_description(description)
   end
 
+  @doc """
+    Get images based on img tags.
+
+    Config options:
+    * :force_images_absolute_url - try to add website url from `LinkPreviewGenerator.Page`
+      struct to all relative urls, then remove remaining relative urls from list;
+      default: false
+  """
   def images(page, body) do
     images = if Application.get_env(:link_preview_generator, :force_images_absolute_url, false) do
       map_image_urls(body, page.website_url)

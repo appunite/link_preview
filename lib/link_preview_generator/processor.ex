@@ -3,7 +3,7 @@ defmodule LinkPreviewGenerator.Processor do
     TODO
   """
   alias LinkPreviewGenerator.{Redirects, OriginalUrl}
-  alias LinkPreviewGenerator.Parsers.{Opengraph, Html}
+  alias LinkPreviewGenerator.Parsers.{Basic, Opengraph, Html}
 
 
   @doc """
@@ -34,13 +34,11 @@ defmodule LinkPreviewGenerator.Processor do
   end
 
   defp collect_data(page, parsers, parsed_body) do
-    functions = [:title, :description, :images]
-
-    Enum.reduce(parsers, page, &apply_each_function(&1, &2, functions, parsed_body))
+    Enum.reduce(parsers, page, &apply_each_function(&1, &2, parsed_body))
   end
 
-  defp apply_each_function(parser, page, functions, parsed_body) do
-    Enum.reduce(functions, page, &Kernel.apply(parser, &1, [&2, parsed_body]))
+  defp apply_each_function(parser, page, parsed_body) do
+    Enum.reduce(Basic.parsing_functions, page, &Kernel.apply(parser, &1, [&2, parsed_body]))
   end
 
 end

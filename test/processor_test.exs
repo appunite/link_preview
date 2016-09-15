@@ -6,7 +6,7 @@ defmodule LinkPreviewGenerator.ProcessorTest do
   @tag :excluded
   describe "#call" do
     test "when Floki raises error" do
-      with_mock Floki, [parse: fn(_) -> :meck.exception() end] do
+      with_mock Floki, [parse: fn(_) -> "raise error here" end] do
         assert (Processor.call("example.com") == {:error, :floki_raised})
       end
     end

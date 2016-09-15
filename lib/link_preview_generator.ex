@@ -1,13 +1,13 @@
 defmodule LinkPreviewGenerator do
   @moduledoc """
-    TODO
+    Simple package for link previews.
   """
 
   @type success :: {:ok, LinkPreviewGenerator.Page.t}
   @type failure :: {:error, atom}
 
   @doc """
-    TODO
+    Returns result of processing.
   """
   @spec parse(String.t) :: success | failure
   def parse(url) do

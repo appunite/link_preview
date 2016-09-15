@@ -68,6 +68,31 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
       end
     end
 
+    test "optimistic case with :force_images_url_schema" do
+      with_mock HTTPoison, [get: fn(url, _, _) -> response_helper(url) end] do
+        Application.put_env(:link_preview_generator, :force_images_url_schema, true)
+
+        assert Html.images(@page, @html).images == [
+          %{url: "http://example.com/images/html1.jpg"},
+          %{url: "http://example.com/images/html2.jpg"}
+        ]
+      end
+    end
+
+    test "optimistic case with all additional options" do
+      with_mock HTTPoison, [get: fn(url, _, _) -> response_helper(url) end] do
+        Application.put_env(:link_preview_generator, :force_images_absolute_url, true)
+        Application.put_env(:link_preview_generator, :force_images_url_schema, true)
+
+        assert Html.images(@page, @html).images == [
+          %{url: "http://example.com/images/html1.jpg"},
+          %{url: "http://example.com/images/html2.jpg"},
+          %{url: "http://example.com/images/html3.jpg"},
+          %{url: "http://example.com/images/html4.jpg"}
+        ]
+      end
+    end
+
     test "pessimistic case" do
       assert Html.images(@page, @opengraph) == %Page{@page | images: []}
     end
@@ -77,6 +102,7 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
     on_exit fn ->
       Application.put_env(:link_preview_generator, :friendly_strings, true)
       Application.put_env(:link_preview_generator, :force_images_absolute_url, false)
+      Application.put_env(:link_preview_generator, :force_images_url_schema, false)
     end
 
     {:ok, tags}

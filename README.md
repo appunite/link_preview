@@ -22,12 +22,12 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
 You just need to execute:
 
-  LinkPreviewGenerator.parse("www.yahoo.pl")
+    LinkPreviewGenerator.parse("www.yahoo.pl")
 
 in response you'll receive
-  %LinkPreviewGenerator.Page{description: "News, email and search are just the beginning. Discover more every day. Find your yodel.",
-    images: [%{url: "https://s.yimg.com/dh/ap/default/130909/y_200_a.png"}],
-    original_url: "yahoo.pl", title: "Yahoo", website_url: "https://www.yahoo.com"}
+    %LinkPreviewGenerator.Page{description: "News, email and search are just the beginning. Discover more every day. Find your yodel.",
+      images: [%{url: "https://s.yimg.com/dh/ap/default/130909/y_200_a.png"}],
+      original_url: "yahoo.pl", title: "Yahoo", website_url: "https://www.yahoo.com"}
 
 ## License
 

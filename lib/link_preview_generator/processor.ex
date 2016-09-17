@@ -37,7 +37,27 @@ defmodule LinkPreviewGenerator.Processor do
   end
 
   defp apply_each_function(parser, page, parsed_body) do
-    Enum.reduce(Basic.parsing_functions, page, &Kernel.apply(parser, &1, [&2, parsed_body]))
+    Enum.reduce_while(Basic.parsing_functions, page, &apply_or_halt(parser, &1, &2, parsed_body))
+  end
+
+  defp apply_or_halt(parser, :images, page, parsed_body) do
+    current_value = Map.get(page, :images)
+
+    if current_value == [] do
+      {:cont, Kernel.apply(parser, :images, [page, parsed_body])}
+    else
+      {:halt, page}
+    end
+  end
+
+  defp apply_or_halt(parser, function, page, parsed_body) do
+    current_value = Map.get(page, function)
+
+    if is_nil(current_value) do
+      {:cont, Kernel.apply(parser, function, [page, parsed_body])}
+    else
+      {:halt, page}
+    end
   end
 
 end

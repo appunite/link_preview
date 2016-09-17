@@ -10,7 +10,7 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
   def title(page, body) do
     title =
       body
-      |> Floki.find("[property=og:title]")
+      |> Floki.find("meta[property^=\"og:title\"]")
       |> Floki.attribute("content")
       |> List.first
 
@@ -23,7 +23,7 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
   def description(page, body) do
     description =
       body
-      |> Floki.find("[property=og:description]")
+      |> Floki.find("meta[property^=\"og:description\"]")
       |> Floki.attribute("content")
       |> List.first
 
@@ -36,7 +36,7 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
   def images(page, body) do
     images =
       body
-      |> Floki.find("[property=og:image]")
+      |> Floki.find("meta[property^=\"og:image\"]")
       |> Floki.attribute("content")
       |> Enum.map(&(%{url: &1}))
 

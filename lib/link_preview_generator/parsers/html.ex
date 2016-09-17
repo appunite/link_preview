@@ -37,7 +37,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       default: true
   """
   def description(page, body) do
-    description = search_h(body, 1)
+    description = search_description(body) || search_h(body, 1)
 
     page |> update_description(description)
   end
@@ -62,6 +62,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     images =
       body
       |> Floki.attribute("img", "src")
+      |> Enum.take(3)
       |> check_force_absolute_url(page)
       |> check_force_url_schema
       |> check_filter_small_images
@@ -77,6 +78,13 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     else
       choosen |> Floki.text
     end
+  end
+
+  defp search_description(body) do
+    body
+    |> Floki.find("meta[name^=\"description\"]")
+    |> Floki.attribute("content")
+    |> List.first
   end
 
   defp search_h(_body, 7), do: nil

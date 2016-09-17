@@ -52,17 +52,4 @@ defmodule LinkPreviewGenerator.Parsers.Basic do
   """
   @spec parsing_functions :: list
   def parsing_functions, do: @parsing_functions
-
-  #TODO replace functions below by something more clever
-  @doc false
-  def update_title(%Page{title: title} = page, _new) when not is_nil(title), do: page
-  def update_title(page, new),do: %Page{page | title: new}
-
-  @doc false
-  def update_description(%Page{description: description} = page, _new) when not is_nil(description), do: page
-  def update_description(page, new), do: %Page{page | description: new}
-
-  @doc false
-  def update_images(%Page{images: images} = page, _new) when images != [], do: page
-  def update_images(page, new), do: %Page{page | images: new}
 end

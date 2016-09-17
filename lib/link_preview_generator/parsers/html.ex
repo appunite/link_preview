@@ -2,7 +2,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   @moduledoc """
     Parser implementation based on html tags.
   """
-  alias LinkPreviewGenerator.Requests
+  alias LinkPreviewGenerator.{Page, Requests}
 
   use LinkPreviewGenerator.Parsers.Basic
 
@@ -22,7 +22,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       |> List.first
       |> get_text
 
-    page |> update_title(title)
+    %Page{page | title: title}
   end
 
   @doc """
@@ -39,7 +39,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   def description(page, body) do
     description = search_h(body, 1)
 
-    page |> update_description(description)
+    %Page{page | description: description}
   end
 
   @doc """
@@ -67,7 +67,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       |> check_filter_small_images
       |> Enum.map(&(%{url: &1}))
 
-    page |> update_images(images)
+    %Page{page | images: images}
   end
 
   defp get_text(nil), do: nil

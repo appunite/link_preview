@@ -141,13 +141,13 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   end
 
   defp force_absolute_url(url, website_url) do
-    with     {:error, _} <- Requests.valid_image?(url),
+    with           false <- String.match?(url, ~r/\A(http(s)?:\/\/)?([^\/]+\.)+[^\/]+/),
                   prefix <- website_url |> String.replace_suffix("/", ""),
                   suffix <- url |> String.replace_prefix("/", "")
     do
       prefix <> "/" <> suffix
     else
-      {:ok, old_url} -> old_url
+      true -> url
     end
   end
 

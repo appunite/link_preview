@@ -31,26 +31,12 @@ defmodule LinkPreviewGenerator.Requests do
   end
 
   @doc """
-    Check if given url leads somewhere
-  """
-  @spec valid?(String.t) :: {:ok, String.t} | {:error, atom}
-  def valid?(url) do
-    case HTTPoison.head(url, [], follow_redirect: true) do
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, reason}
-      {:ok, %HTTPoison.Response{status_code: 200}} ->
-        {:ok, url}
-      _ ->
-        {:error, :invalid_url}
-    end
-  end
-
-  @doc """
     Check if given url leads to image
   """
   @spec valid_image?(String.t) :: {:ok, String.t} | {:error, atom}
+  def valid_image?("/" <> _), do: {:error, :relative_url}
   def valid_image?(url) do
-    with {:ok, %HTTPoison.Response{status_code: 200, headers: headers}} <- HTTPoison.head(url, [], follow_redirect: true),
+    with {:ok, %HTTPoison.Response{status_code: 200, headers: headers}} <- HTTPoison.head(url, [], follow_redirect: true, timeout: 200),
                                                                    true <- List.keymember?(headers, "Content-Type", 0),
                                                            content_type <- headers |> List.keyfind("Content-Type", 0) |> elem(1),
                                                                    true <- String.match?(content_type, ~r/\Aimage\//)

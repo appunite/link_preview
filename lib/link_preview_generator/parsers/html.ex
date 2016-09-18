@@ -125,9 +125,8 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     end
   end
 
-
   defp force_absolute_url(url, website_url) do
-    with     {:error, _} <- Requests.valid?(url),
+    with     {:error, _} <- Requests.valid_image?(url),
                   prefix <- website_url |> String.replace_suffix("/", ""),
                   suffix <- url |> String.replace_prefix("/", ""),
           {:ok, new_url} <- Requests.valid_image?(prefix <> "/" <> suffix)
@@ -150,7 +149,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
 
   defp filter_small_images(url, min_size) do
     with                                     {:ok, _} <- Requests.valid_image?(url),
-               {:ok, %HTTPoison.Response{body: body}} <- HTTPoison.get(url),
+               {:ok, %HTTPoison.Response{body: body}} <- HTTPoison.get(url, [], follow_redirect: true, timeout: 200),
                                  {:ok, tempfile_path} <- Tempfile.random("link_preview_generator"),
                                                   :ok <- File.write(tempfile_path, body),
                                %Mogrify.Image{} = raw <- Mogrify.open(tempfile_path),

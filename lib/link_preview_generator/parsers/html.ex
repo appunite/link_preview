@@ -125,6 +125,8 @@ defmodule LinkPreviewGenerator.Parsers.Html do
 
   defp check_filter_small_images(urls) do
     case Application.get_env(:link_preview_generator, :filter_small_images) do
+      nil ->
+        urls
       false ->
         urls
       true ->

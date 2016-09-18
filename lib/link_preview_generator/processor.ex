@@ -1,13 +1,12 @@
 defmodule LinkPreviewGenerator.Processor do
   @moduledoc """
-    TODO
+    Combines the logic of other modules with user input.
   """
   alias LinkPreviewGenerator.Requests
   alias LinkPreviewGenerator.Parsers.{Basic, Opengraph, Html}
 
-
   @doc """
-    TODO
+    Takes url and returns result of processing.
   """
   @spec call(String.t) :: LinkPreviewGenerator.success | LinkPreviewGenerator.failure
   def call(url) do

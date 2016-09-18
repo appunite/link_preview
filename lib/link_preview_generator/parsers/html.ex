@@ -45,7 +45,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   @doc """
     Get images based on img tags.
 
-    Config options:
+    Config options (WARNING: using these may reduce performance):
     * `:force_images_absolute_url` - try to add website url from `LinkPreviewGenerator.Page`
       struct to all relative urls, then remove remaining relative urls from list;
       default: false
@@ -56,6 +56,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       smaller than 100px;
       if set to integer value it filters images with at least one dimension smaller than that
       integer;
+      requires imagemagick to be installed on machine.
       default: false;
   """
   def images(page, body) do

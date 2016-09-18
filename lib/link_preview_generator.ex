@@ -7,6 +7,7 @@ defmodule LinkPreviewGenerator do
   @type success :: {:ok, LinkPreviewGenerator.Page.t}
   @type failure :: {:error, atom}
 
+  @doc false
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
@@ -19,12 +20,5 @@ defmodule LinkPreviewGenerator do
     Supervisor.start_link(children, opts)
   end
 
-
-  @doc """
-    Returns result of processing.
-  """
-  @spec parse(String.t) :: success | failure
-  def parse(url) do
-    LinkPreviewGenerator.Processor.call(url)
-  end
+  defdelegate parse(url), to: LinkPreviewGenerator.Processor, as: :call
 end

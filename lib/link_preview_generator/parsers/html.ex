@@ -89,7 +89,11 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       |> List.first
       |> get_text
 
-    description || search_h(body, level + 1)
+    case description do
+      nil -> search_h(body, level + 1)
+      "" -> search_h(body, level + 1)
+      _ -> description
+    end
   end
 
   defp check_force_absolute_url(urls, page) do

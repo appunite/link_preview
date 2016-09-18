@@ -2,7 +2,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   @moduledoc """
     Parser implementation based on html tags.
   """
-  alias LinkPreviewGenerator.{Page, Requests}
+  alias LinkPreviewGenerator.{Page, ParallelHelper, Requests}
 
   use LinkPreviewGenerator.Parsers.Basic
 
@@ -45,7 +45,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   @doc """
     Get images based on img tags.
 
-    Config options (WARNING: using these may reduce performance):
+    Config options:
     * `:force_images_absolute_url` - try to add website url from `LinkPreviewGenerator.Page`
       struct to all relative urls, then remove remaining relative urls from list;
       default: false
@@ -56,13 +56,18 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       smaller than 100px;
       if set to integer value it filters images with at least one dimension smaller than that
       integer;
-      requires imagemagick to be installed on machine.
+      requires imagemagick to be installed on machine;
       default: false;
+
+    <br>
+    WARNING: Using these options may reduce performance. To prevent very long processing time
+    images limited to first 50 by design.
   """
   def images(page, body) do
     images =
       body
       |> Floki.attribute("img", "src")
+      |> limit_if_needed
       |> check_force_absolute_url(page)
       |> check_force_url_schema
       |> validate_if_needed
@@ -93,6 +98,19 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       nil -> search_h(body, level + 1)
       "" -> search_h(body, level + 1)
       _ -> description
+    end
+  end
+
+  defp limit_if_needed(urls) do
+    cond do
+      Application.get_env(:link_preview_generator, :force_images_absolute_url) ->
+        urls |> Enum.take(50)
+      Application.get_env(:link_preview_generator, :force_images_url_schema) ->
+        urls |> Enum.take(50)
+      Application.get_env(:link_preview_generator, :filter_small_images) ->
+        urls |> Enum.take(50)
+      true ->
+        urls
     end
   end
 
@@ -135,11 +153,11 @@ defmodule LinkPreviewGenerator.Parsers.Html do
         urls
       true ->
         urls
-        |> Enum.map(&filter_small_images(&1, 100))
+        |> ParallelHelper.map(&filter_small_images(&1, 100))
         |> Enum.reject(&Kernel.is_nil(&1))
       value ->
         urls
-        |> Enum.map(&filter_small_images(&1, value))
+        |> ParallelHelper.map(&filter_small_images(&1, value))
         |> Enum.reject(&Kernel.is_nil(&1))
     end
   end
@@ -161,7 +179,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
 
   defp validate_images(urls) do
     urls
-    |> Enum.map(&validate_image(&1))
+    |> ParallelHelper.map(&validate_image(&1))
     |> Enum.reject(&Kernel.is_nil(&1))
   end
 

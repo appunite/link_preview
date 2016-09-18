@@ -64,6 +64,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       |> Floki.attribute("img", "src")
       |> check_force_absolute_url(page)
       |> check_force_url_schema
+      |> validate_if_needed
       |> check_filter_small_images
       |> Enum.map(&(%{url: &1}))
 
@@ -91,27 +92,38 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   end
 
   defp check_force_absolute_url(urls, page) do
-    if Application.get_env(:link_preview_generator, :force_images_absolute_url, false) do
+    if Application.get_env(:link_preview_generator, :force_images_absolute_url) do
       urls
       |> Enum.map(&force_absolute_url(&1, page.website_url))
-      |> Enum.reject(&Kernel.is_nil(&1))
     else
       urls
     end
   end
 
   defp check_force_url_schema(urls) do
-    if Application.get_env(:link_preview_generator, :force_images_url_schema, false) do
+    if Application.get_env(:link_preview_generator, :force_images_url_schema) do
       urls
       |> Enum.map(&force_schema(&1))
-      |> Enum.reject(&Kernel.is_nil(&1))
     else
       urls
     end
   end
 
+  defp validate_if_needed(urls) do
+    cond do
+      Application.get_env(:link_preview_generator, :force_images_absolute_url) ->
+        urls |> validate_images
+      Application.get_env(:link_preview_generator, :force_images_url_schema) ->
+        urls |> validate_images
+      Application.get_env(:link_preview_generator, :filter_small_images) ->
+        urls |> validate_images
+      true ->
+        urls
+    end
+  end
+
   defp check_filter_small_images(urls) do
-    case Application.get_env(:link_preview_generator, :filter_small_images, false) do
+    case Application.get_env(:link_preview_generator, :filter_small_images) do
       false ->
         urls
       true ->
@@ -128,28 +140,33 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   defp force_absolute_url(url, website_url) do
     with     {:error, _} <- Requests.valid_image?(url),
                   prefix <- website_url |> String.replace_suffix("/", ""),
-                  suffix <- url |> String.replace_prefix("/", ""),
-          {:ok, new_url} <- Requests.valid_image?(prefix <> "/" <> suffix)
+                  suffix <- url |> String.replace_prefix("/", "")
     do
-      new_url
+      prefix <> "/" <> suffix
     else
       {:ok, old_url} -> old_url
-      {:error, _}    -> nil
     end
   end
 
   defp force_schema("http://" <> _ = url), do: url
   defp force_schema("https://" <> _ = url), do: url
-  defp force_schema(url) do
-    case Requests.valid_image?("http://" <> url) do
-      {:ok, new_url} -> new_url
-      {:error, _}    -> nil
+  defp force_schema(url), do: "http://" <> url
+
+  defp validate_images(urls) do
+    urls
+    |> Enum.map(&validate_image(&1))
+    |> Enum.reject(&Kernel.is_nil(&1))
+  end
+
+  defp validate_image(url) do
+    case Requests.valid_image?(url) do
+      {:ok, _} -> url
+      {:error, _} -> nil
     end
   end
 
   defp filter_small_images(url, min_size) do
-    with                                     {:ok, _} <- Requests.valid_image?(url),
-               {:ok, %HTTPoison.Response{body: body}} <- HTTPoison.get(url, [], follow_redirect: true, timeout: 200),
+    with       {:ok, %HTTPoison.Response{body: body}} <- HTTPoison.get(url, [], follow_redirect: true, timeout: 200),
                                  {:ok, tempfile_path} <- Tempfile.random("link_preview_generator"),
                                                   :ok <- File.write(tempfile_path, body),
                                %Mogrify.Image{} = raw <- Mogrify.open(tempfile_path),

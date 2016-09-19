@@ -2,7 +2,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   @moduledoc """
     Parser implementation based on html tags.
   """
-  alias LinkPreviewGenerator.Requests
+  alias LinkPreviewGenerator.{Page, ParallelHelper, Requests}
 
   use LinkPreviewGenerator.Parsers.Basic
 
@@ -22,7 +22,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       |> List.first
       |> get_text
 
-    page |> update_title(title)
+    %Page{page | title: title}
   end
 
   @doc """
@@ -39,7 +39,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   def description(page, body) do
     description = search_h(body, 1)
 
-    page |> update_description(description)
+    %Page{page | description: description}
   end
 
   @doc """
@@ -56,18 +56,25 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       smaller than 100px;
       if set to integer value it filters images with at least one dimension smaller than that
       integer;
+      requires imagemagick to be installed on machine;
       default: false;
+
+    <br>
+    WARNING: Using these options may reduce performance. To prevent very long processing time
+    images limited to first 50 by design.
   """
   def images(page, body) do
     images =
       body
       |> Floki.attribute("img", "src")
+      |> limit_if_needed
       |> check_force_absolute_url(page)
       |> check_force_url_schema
+      |> validate_if_needed
       |> check_filter_small_images
       |> Enum.map(&(%{url: &1}))
 
-    page |> update_images(images)
+    %Page{page | images: images}
   end
 
   defp get_text(nil), do: nil
@@ -87,70 +94,104 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       |> List.first
       |> get_text
 
-    description || search_h(body, level + 1)
+    case description do
+      nil -> search_h(body, level + 1)
+      "" -> search_h(body, level + 1)
+      _ -> description
+    end
+  end
+
+  defp limit_if_needed(urls) do
+    cond do
+      Application.get_env(:link_preview_generator, :force_images_absolute_url) ->
+        urls |> Enum.take(50)
+      Application.get_env(:link_preview_generator, :force_images_url_schema) ->
+        urls |> Enum.take(50)
+      Application.get_env(:link_preview_generator, :filter_small_images) ->
+        urls |> Enum.take(50)
+      true ->
+        urls
+    end
   end
 
   defp check_force_absolute_url(urls, page) do
-    if Application.get_env(:link_preview_generator, :force_images_absolute_url, false) do
+    if Application.get_env(:link_preview_generator, :force_images_absolute_url) do
       urls
       |> Enum.map(&force_absolute_url(&1, page.website_url))
-      |> Enum.reject(&Kernel.is_nil(&1))
     else
       urls
     end
   end
 
   defp check_force_url_schema(urls) do
-    if Application.get_env(:link_preview_generator, :force_images_url_schema, false) do
+    if Application.get_env(:link_preview_generator, :force_images_url_schema) do
       urls
       |> Enum.map(&force_schema(&1))
-      |> Enum.reject(&Kernel.is_nil(&1))
     else
       urls
+    end
+  end
+
+  defp validate_if_needed(urls) do
+    cond do
+      Application.get_env(:link_preview_generator, :force_images_absolute_url) ->
+        urls |> validate_images
+      Application.get_env(:link_preview_generator, :force_images_url_schema) ->
+        urls |> validate_images
+      Application.get_env(:link_preview_generator, :filter_small_images) ->
+        urls |> validate_images
+      true ->
+        urls
     end
   end
 
   defp check_filter_small_images(urls) do
-    case Application.get_env(:link_preview_generator, :filter_small_images, false) do
+    case Application.get_env(:link_preview_generator, :filter_small_images) do
+      nil ->
+        urls
       false ->
         urls
       true ->
         urls
-        |> Enum.map(&filter_small_images(&1, 100))
+        |> ParallelHelper.map(&filter_small_images(&1, 100))
         |> Enum.reject(&Kernel.is_nil(&1))
       value ->
         urls
-        |> Enum.map(&filter_small_images(&1, value))
+        |> ParallelHelper.map(&filter_small_images(&1, value))
         |> Enum.reject(&Kernel.is_nil(&1))
     end
   end
 
-
   defp force_absolute_url(url, website_url) do
-    with     {:error, _} <- Requests.valid?(url),
+    with           false <- String.match?(url, ~r/\A(http(s)?:\/\/)?([^\/]+\.)+[^\/]+/),
                   prefix <- website_url |> String.replace_suffix("/", ""),
-                  suffix <- url |> String.replace_prefix("/", ""),
-          {:ok, new_url} <- Requests.valid_image?(prefix <> "/" <> suffix)
+                  suffix <- url |> String.replace_prefix("/", "")
     do
-      new_url
+      prefix <> "/" <> suffix
     else
-      {:ok, old_url} -> old_url
-      {:error, _}    -> nil
+      true -> url
     end
   end
 
   defp force_schema("http://" <> _ = url), do: url
   defp force_schema("https://" <> _ = url), do: url
-  defp force_schema(url) do
-    case Requests.valid_image?("http://" <> url) do
-      {:ok, new_url} -> new_url
-      {:error, _}    -> nil
+  defp force_schema(url), do: "http://" <> url
+
+  defp validate_images(urls) do
+    urls
+    |> ParallelHelper.map(&validate_image(&1))
+    |> Enum.reject(&Kernel.is_nil(&1))
+  end
+
+  defp validate_image(url) do
+    case Requests.valid_image?(url) do
+      {:ok, _} -> url
+      {:error, _} -> nil
     end
   end
 
   defp filter_small_images(url, min_size) do
-    with                                     {:ok, _} <- Requests.valid_image?(url),
-               {:ok, %HTTPoison.Response{body: body}} <- HTTPoison.get(url),
+    with       {:ok, %HTTPoison.Response{body: body}} <- HTTPoison.get(url, [], follow_redirect: true, timeout: 200),
                                  {:ok, tempfile_path} <- Tempfile.random("link_preview_generator"),
                                                   :ok <- File.write(tempfile_path, body),
                                %Mogrify.Image{} = raw <- Mogrify.open(tempfile_path),

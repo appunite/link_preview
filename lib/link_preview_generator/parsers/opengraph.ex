@@ -2,6 +2,8 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
   @moduledoc """
     Parser implementation based on opengraph.
   """
+  alias LinkPreviewGenerator.Page
+
   use LinkPreviewGenerator.Parsers.Basic
 
   @doc """
@@ -14,7 +16,7 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
       |> Floki.attribute("content")
       |> List.first
 
-    page |> update_title(title)
+    %Page{page | title: title}
   end
 
   @doc """
@@ -27,7 +29,7 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
       |> Floki.attribute("content")
       |> List.first
 
-    page |> update_description(description)
+    %Page{page | description: description}
   end
 
   @doc """
@@ -40,6 +42,6 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
       |> Floki.attribute("content")
       |> Enum.map(&(%{url: &1}))
 
-    page |> update_images(images)
+    %Page{page | images: images}
   end
 end

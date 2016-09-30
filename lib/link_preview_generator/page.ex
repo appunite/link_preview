@@ -21,21 +21,24 @@ defmodule LinkPreviewGenerator.Page do
   }
 
   @doc """
-    Initializes Page struct based on current and original url.
-
-    Args:
-    * `current_url` - final url after redirects and/or normalization
-    * `original_url` - original url provided by user
+    Initializes Page struct based on original url provided by user
   """
-  @spec new(String.t, String.t | nil) :: t
-  def new(current_url, original_url \\ nil) do
-    %__MODULE__{
-      original_url: original_url || current_url,
-      website_url: website_url(current_url)
-    }
+  @spec new(String.t) :: t | {:error, atom}
+  def new(original_url) do
+    case LinkPreviewGenerator.Requests.final_location(original_url) do
+      {:ok, location} ->
+        page = %__MODULE__{
+          original_url: original_url,
+          website_url: website_url(location)
+        }
+
+        {:ok, page}
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
-  def website_url(url) do
+  defp website_url(url) do
     path = cond do
       String.match?(url, ~r/\Ahttp(s)?:\/\/([^\/]+\.)+[^\/]+/) ->
         String.replace(url, ~r/\Ahttp(s)?:\/\/([^\/]+\.)+[^\/]+/, "")

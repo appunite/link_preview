@@ -2,7 +2,7 @@ defmodule LinkPreviewGenerator.Processor do
   @moduledoc """
     Combines the logic of other modules with user input.
   """
-  alias LinkPreviewGenerator.Requests
+  alias LinkPreviewGenerator.{Page, Requests}
   alias LinkPreviewGenerator.Parsers.{Basic, Opengraph, Html}
 
   @doc """
@@ -10,8 +10,9 @@ defmodule LinkPreviewGenerator.Processor do
   """
   @spec call(String.t) :: LinkPreviewGenerator.success | LinkPreviewGenerator.failure
   def call(url) do
-    with  {:ok, response, page}  <- Requests.handle_redirects(url),
-          {:ok, parsed_body}     <- parse_body(response.body)
+    with  {:ok, response}     <- Requests.get(url, [], [follow_redirect: true]),
+          {:ok, page}         <- Page.new(url),
+          {:ok, parsed_body}  <- parse_body(response.body)
     do
       parsers = Application.get_env(:link_preview_generator, :parsers, [Opengraph, Html])
       page = page |> collect_data(parsers, parsed_body)

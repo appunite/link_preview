@@ -2,49 +2,26 @@ defmodule LinkPreviewGenerator.PageTest do
   alias LinkPreviewGenerator.Page
   use ExUnit.Case
 
+  import Mock
+
   @original_url "http://example.com/current"
 
   describe "#new" do
-    test "current url with http schema and path" do
-      assert Page.new("http://example.com/path/to/something", @original_url) == %Page{
-        original_url: @original_url,
-        website_url: "http://example.com",
-      }
+    test "returns success tuple when final location is valid" do
+      with_mock LinkPreviewGenerator.Requests, [final_location: fn(_url) -> {:ok, @original_url} end] do
+        page = %Page{
+          original_url: @original_url,
+          website_url: "http://example.com",
+        }
+
+        assert Page.new(@original_url) == {:ok, page}
+      end
     end
 
-    test "current url with http schema and without path" do
-      assert Page.new("http://example.com", @original_url) == %Page{
-        original_url: @original_url,
-        website_url: "http://example.com",
-      }
-    end
-
-    test "current url with https schema and path" do
-      assert Page.new("https://example.com/path/to/something", @original_url) == %Page{
-        original_url: @original_url,
-        website_url: "https://example.com",
-      }
-    end
-
-    test "current url with https schema and without path" do
-      assert Page.new("https://example.com", @original_url) == %Page{
-        original_url: @original_url,
-        website_url: "https://example.com",
-      }
-    end
-
-    test "current url without schema but with path" do
-      assert Page.new("example.com/path/to/something", @original_url) == %Page{
-        original_url: @original_url,
-        website_url: "example.com",
-      }
-    end
-
-    test "current url without schema and path" do
-      assert Page.new("example.com", @original_url) == %Page{
-        original_url: @original_url,
-        website_url: "example.com",
-      }
+    test "returns error tuple when final location is invalid" do
+      with_mock LinkPreviewGenerator.Requests, [final_location: fn(_url) -> {:error, :reason} end] do
+        assert Page.new(@original_url) == {:error, :reason}
+      end
     end
   end
 

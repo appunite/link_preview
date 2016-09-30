@@ -26,15 +26,13 @@ defmodule LinkPreviewGenerator.Mixfile do
       files: ["lib", "config", "mix.exs", "README.md"],
       maintainers: ["Tobiasz Małecki", "Karol Wojtaszek"],
       licenses: ["Apache 2.0"],
-      links: %{"GitHub" => "https://github.com/appunite/link_preview_generator",
-            "Docs" => "http://hexdocs.pm/link_preview_generator/"}
+      links: %{"GitHub" => "https://github.com/appunite/link_preview_generator"}
    ]
   end
 
   def application do
     [
-      applications: [:floki, :httpoison, :logger, :mogrify, :tempfile],
-      mod: {LinkPreviewGenerator, []}
+      applications: [:floki, :httpoison, :logger, :mogrify, :tempfile]
     ]
   end
 

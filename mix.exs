@@ -33,8 +33,7 @@ defmodule LinkPreviewGenerator.Mixfile do
 
   def application do
     [
-      applications: [:floki, :httpoison, :logger, :mogrify, :tempfile],
-      mod: {LinkPreviewGenerator, []}
+      applications: [:floki, :httpoison, :logger, :mogrify, :tempfile]
     ]
   end
 

@@ -5,59 +5,30 @@ defmodule LinkPreviewGenerator.RequestsTest do
   import Mock
 
   @url "http://example.com/"
-  @location "http://example2.com/"
 
   @ok %HTTPoison.Response{status_code: 200}
-  @bad_request %HTTPoison.Response{status_code: 400}
-  @moved_permamently %HTTPoison.Response{status_code: 301, headers: [{"Location", @location}]}
-  @found %HTTPoison.Response{status_code: 302, headers: [{"location", @location}]}
 
-  @redirect_without_location %HTTPoison.Response{status_code: 301}
-
-  describe "#handle_redirects" do
-    test "returns success tuple if response status is 200" do
-      with_mock HTTPoison, [get: fn(_url) -> {:ok, @ok} end] do
-        assert Requests.handle_redirects(@url, @url) == {:ok, @ok, Page.new(@url, @url)}
+  describe "#get" do
+    test "returns success tuple when url is valid" do
+      with_mock HTTPoison, [get: fn(_url, _h, _opts) -> {:ok, @ok} end] do
+        assert Requests.get(@url, [], []) == {:ok, @ok}
       end
     end
 
-    test "returns error tuple if Requests module doesn't support given status code" do
-      with_mock HTTPoison, [get: fn(_url) -> {:ok, @bad_request} end] do
-        assert Requests.handle_redirects(@url, @url) == {:error, :unprocessable_response}
-      end
-    end
-
-    test "returns success tuple after successful 301 redirect" do
-      with_mock HTTPoison, [get: fn(url) -> moved_permamently_helper(url) end] do
-        assert Requests.handle_redirects(@url, @url) == {:ok, @ok, Page.new(@location, @url)}
-      end
-    end
-
-    test "returns success tuple after successful 302 redirect" do
-      with_mock HTTPoison, [get: fn(url) -> found_helper(url) end] do
-        assert Requests.handle_redirects(@url, @url) == {:ok, @ok, Page.new(@location, @url)}
-      end
-    end
-
-    test "returns error tuple if redirect is missing location header" do
-      with_mock HTTPoison, [get: fn(_url) -> {:ok, @redirect_without_location} end] do
-        assert Requests.handle_redirects(@url, @url) == {:error, :unknown_location}
-      end
+    test "returns error tuple when url can cause badarg error" do
+      assert Requests.get("/invalid", [], []) == {:error, :badarg}
     end
   end
 
-  defp moved_permamently_helper(url) do
-    case url do
-      @url -> {:ok, @moved_permamently}
-      @location -> {:ok, @ok}
+  describe "#head" do
+    test "returns success tuple when url is valid" do
+      with_mock HTTPoison, [head: fn(_url, _h, _opts) -> {:ok, @ok} end] do
+        assert Requests.head(@url, [], []) == {:ok, @ok}
+      end
+    end
+
+    test "returns error tuple when url can cause badarg error" do
+      assert Requests.head("", [], []) == {:error, :badarg}
     end
   end
-
-  defp found_helper(url) do
-    case url do
-      @url -> {:ok, @found}
-      @location -> {:ok, @ok}
-    end
-  end
-
 end

@@ -6,6 +6,32 @@ defmodule LinkPreviewGenerator.Requests do
   @type t :: {:ok, String.t} | {:error, atom}
 
   @doc """
+    Function that invokes HTTPoison.get only if badarg error can not occur.
+  """
+  @spec get(String.t, list, list) :: {:ok, HTTPoison.Response.t} | {:error, atom}
+  def get(url, headers, options) do
+    case check_badargs(url) do
+      :ok ->
+        HTTPoison.get(url, headers, options)
+      :badarg ->
+        {:error, :badarg}
+    end
+  end
+
+  @doc """
+    Function that invokes HTTPoison.head only if badarg error can not occur.
+  """
+  @spec head(String.t, list, list) :: {:ok, HTTPoison.Response.t} | {:error, atom}
+  def head(url, headers, options) do
+    case check_badargs(url) do
+      :ok ->
+        HTTPoison.head(url, headers, options)
+      :badarg ->
+        {:error, :badarg}
+    end
+  end
+
+  @doc """
     Follow redirects and returns final location.
   """
   @spec final_location(String.t) :: t
@@ -24,9 +50,8 @@ defmodule LinkPreviewGenerator.Requests do
     Check if given url leads to image
   """
   @spec valid_image?(String.t) :: t
-  def valid_image?("/" <> _), do: {:error, :relative_url}
   def valid_image?(url) do
-    with {:ok, %HTTPoison.Response{status_code: 200, headers: headers}} <- HTTPoison.head(url, [], follow_redirect: true, timeout: 200),
+    with {:ok, %HTTPoison.Response{status_code: 200, headers: headers}} <- head(url, [], follow_redirect: true, timeout: 200),
                                                                    true <- List.keymember?(headers, "Content-Type", 0),
                                                            content_type <- headers |> List.keyfind("Content-Type", 0) |> elem(1),
                                                                    true <- String.match?(content_type, ~r/\Aimage\//)
@@ -37,6 +62,19 @@ defmodule LinkPreviewGenerator.Requests do
         {:error, reason}
       _ ->
         {:error, :invalid_image}
+    end
+  end
+
+  defp check_badargs(url) do
+    case url do
+      nil ->
+        :badarg
+      "" ->
+        :badarg
+      "/" <> _ ->
+        :badarg
+      _ ->
+        :ok
     end
   end
 end

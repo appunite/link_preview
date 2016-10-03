@@ -4,7 +4,7 @@ defmodule LinkPreviewGenerator.Mixfile do
   def project do
     [
       app: :link_preview_generator,
-      version: "0.0.4",
+      version: "0.0.5",
       elixir: "~> 1.3",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -23,7 +23,7 @@ defmodule LinkPreviewGenerator.Mixfile do
 
   defp package do
     [
-      files: ["lib", "config", "mix.exs", "README.md"],
+      files: ["lib", "config", "mix.exs", "README.md", "CHANGELOG.md"],
       maintainers: ["Tobiasz Małecki", "Karol Wojtaszek"],
       licenses: ["Apache 2.0"],
       links: %{"GitHub" => "https://github.com/appunite/link_preview_generator"}

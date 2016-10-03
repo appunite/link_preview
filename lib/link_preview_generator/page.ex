@@ -25,17 +25,24 @@ defmodule LinkPreviewGenerator.Page do
   """
   @spec new(String.t) :: t | {:error, atom}
   def new(original_url) do
-    case LinkPreviewGenerator.Requests.final_location(original_url) do
-      {:ok, location} ->
-        page = %__MODULE__{
-          original_url: original_url,
-          website_url: website_url(location)
-        }
+    # case LinkPreviewGenerator.Requests.final_location(original_url) do
+    #   {:ok, location} ->
+    #     page = %__MODULE__{
+    #       original_url: original_url,
+    #       website_url: website_url(location)
+    #     }
 
-        {:ok, page}
-      {:error, reason} ->
-        {:error, reason}
-    end
+    #     {:ok, page}
+    #   {:error, reason} ->
+    #     {:error, reason}
+    # end
+
+    page = %__MODULE__{
+      original_url: original_url,
+      website_url: website_url(original_url)
+    }
+
+    {:ok, page}
   end
 
   defp website_url(url) do

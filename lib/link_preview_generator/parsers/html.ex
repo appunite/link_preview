@@ -192,7 +192,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   end
 
   defp filter_small_images(url, min_size) do
-    with       {:ok, %HTTPoison.Response{body: body}} <- Requests.get(url, [], follow_redirect: true, timeout: 200),
+    with                {:ok, %Tesla.Env{body: body}} <- Requests.sget(url),
                                  {:ok, tempfile_path} <- Tempfile.random("link_preview_generator"),
                                                   :ok <- File.write(tempfile_path, body),
                                %Mogrify.Image{} = raw <- Mogrify.open(tempfile_path),

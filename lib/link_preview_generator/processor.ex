@@ -10,7 +10,7 @@ defmodule LinkPreviewGenerator.Processor do
   """
   @spec call(String.t) :: LinkPreviewGenerator.success | LinkPreviewGenerator.failure
   def call(url) do
-    with  {:ok, response}     <- Requests.get(url, [], [follow_redirect: true]),
+    with  {:ok, response}    <- Requests.sget(url),
           {:ok, page}         <- Page.new(url),
           {:ok, parsed_body}  <- parse_body(response.body)
     do

@@ -32,7 +32,7 @@ defmodule LinkPreviewGenerator.Mixfile do
 
   def application do
     [
-      applications: [:floki, :httpoison, :logger, :mogrify, :tempfile]
+      applications: [:floki, :logger, :mogrify, :tempfile, :tesla]
     ]
   end
 
@@ -40,10 +40,10 @@ defmodule LinkPreviewGenerator.Mixfile do
     [
       {:ex_doc, "~> 0.12", only: :dev},
       {:floki, "~> 0.10.0"},
-      {:httpoison, "~>0.9"},
       {:mock, "~>0.1", only: :test},
       {:mogrify, "~> 0.4.0"},
-      {:tempfile, "~> 0.1.0"}
+      {:tempfile, "~> 0.1.0"},
+      {:tesla, "~> 0.5.0"}
     ]
   end
 

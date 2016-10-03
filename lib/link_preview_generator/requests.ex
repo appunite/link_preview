@@ -3,47 +3,25 @@ defmodule LinkPreviewGenerator.Requests do
     Module providing functions to handle needed requests.
   """
 
+  use Tesla
+  plug Tesla.Middleware.BaseUrl, "http://"
+
   @type t :: {:ok, String.t} | {:error, atom}
 
-  @doc """
-    Function that invokes HTTPoison.get only if badarg error can not occur.
-  """
-  @spec get(String.t, list, list) :: {:ok, HTTPoison.Response.t} | {:error, atom}
-  def get(url, headers, options) do
-    case check_badargs(url) do
-      :ok ->
-        HTTPoison.get(url, headers, options)
-      :badarg ->
-        {:error, :badarg}
-    end
+  def sget(url) do
+    response = get(url)
+
+    {:ok, response}
+  catch
+    _, _ -> {:error, :http}
   end
 
-  @doc """
-    Function that invokes HTTPoison.head only if badarg error can not occur.
-  """
-  @spec head(String.t, list, list) :: {:ok, HTTPoison.Response.t} | {:error, atom}
-  def head(url, headers, options) do
-    case check_badargs(url) do
-      :ok ->
-        HTTPoison.head(url, headers, options)
-      :badarg ->
-        {:error, :badarg}
-    end
-  end
+  def shead(url) do
+    response = head(url)
 
-  @doc """
-    Follow redirects and returns final location.
-  """
-  @spec final_location(String.t) :: t
-  def final_location(url) do
-    case :hackney.request(:get, url, [], [], [follow_redirect: true]) do
-      {:ok, _, _, client} ->
-        location = :hackney.location(client)
-
-        {:ok, location}
-      _ ->
-        {:error, :hackney_redirect}
-    end
+    {:ok, response}
+  catch
+    _, _ -> {:error, :http}
   end
 
   @doc """
@@ -51,15 +29,11 @@ defmodule LinkPreviewGenerator.Requests do
   """
   @spec valid_image?(String.t) :: t
   def valid_image?(url) do
-    with {:ok, %HTTPoison.Response{status_code: 200, headers: headers}} <- head(url, [], follow_redirect: true, timeout: 200),
-                                                                   true <- List.keymember?(headers, "Content-Type", 0),
-                                                           content_type <- headers |> List.keyfind("Content-Type", 0) |> elem(1),
-                                                                   true <- String.match?(content_type, ~r/\Aimage\//)
+    with {:ok, %Tesla.Env{status: 200, headers: headers}} <- shead(url),
+                                                     true <- String.match?(headers["content-type"], ~r/\Aimage\//)
     do
       {:ok, url}
     else
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, reason}
       _ ->
         {:error, :invalid_image}
     end

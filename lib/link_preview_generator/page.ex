@@ -44,6 +44,8 @@ defmodule LinkPreviewGenerator.Page do
         String.replace(url, ~r/\Ahttp(s)?:\/\/([^\/]+\.)+[^\/]+/, "")
       String.match?(url, ~r/\A([^\/]+\.)+[^\/]+/) ->
         String.replace(url, ~r/\A([^\/]+\.)+[^\/]+/, "")
+      true ->
+        nil
     end
 
     url |> String.replace_suffix(path, "")

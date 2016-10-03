@@ -72,6 +72,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
       |> check_force_url_schema
       |> validate_if_needed
       |> check_filter_small_images
+      |> Enum.map(&String.trim(&1))
       |> Enum.map(&(%{url: &1}))
 
     %Page{page | images: images}

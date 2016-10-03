@@ -1,5 +1,10 @@
 # Changelog
 
+# 0.0.5
+
+* Fixed error when final location is not absolute url
+* Removed leading and trailing whitespaces from image urls
+
 # 0.0.4
 
 * Added Changelog, lol ;p

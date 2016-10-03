@@ -40,6 +40,7 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
       body
       |> Floki.find("meta[property^=\"og:image\"]")
       |> Floki.attribute("content")
+      |> Enum.map(&String.trim(&1))
       |> Enum.map(&(%{url: &1}))
 
     %Page{page | images: images}

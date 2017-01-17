@@ -1,10 +1,10 @@
 defmodule LinkPreviewGenerator.Parsers.OpengraphTest do
+  use ExUnit.Case
   alias LinkPreviewGenerator.Parsers.Opengraph
   alias LinkPreviewGenerator.Page
-  use ExUnit.Case
 
-  @html File.read!("test/fixtures/html_example.html") |> Floki.parse
-  @opengraph File.read!("test/fixtures/opengraph_example.html") |> Floki.parse
+  @html File.read!("test/fixtures/html_example.html")
+  @opengraph File.read!("test/fixtures/opengraph_example.html")
 
   @page %Page{original_url: "http://example.com/", website_url: "http://example.com/", images: []}
 

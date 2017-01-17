@@ -57,7 +57,8 @@ defmodule LinkPreviewGenerator.Parsers.Basic do
     If HtmlEntities optional package is loaded then decodes html entities,
     e.g. &quot
   """
-  @spec maybe_friendly_string(String.t) :: String.t
+  @spec maybe_friendly_string(String.t | nil) :: String.t | nil
+  def maybe_friendly_string(nil), do: nil
   def maybe_friendly_string(text) do
     if Application.get_env(:link_preview_generator, :friendly_strings, true) do
       text

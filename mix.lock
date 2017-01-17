@@ -3,6 +3,7 @@
   "ex_doc": {:hex, :ex_doc, "0.13.0", "aa2f8fe4c6136a2f7cfc0a7e06805f82530e91df00e2bff4b4362002b43ada65", [:mix], [{:earmark, "~> 1.0", [hex: :earmark, optional: false]}]},
   "floki": {:hex, :floki, "0.10.1", "1e36c04264396699f02640e4f88ee92c3459a9286795f54c860aec9204bfcbf2", [:mix], [{:mochiweb_html, "~> 2.15", [hex: :mochiweb_html, optional: false]}]},
   "hackney": {:hex, :hackney, "1.6.1", "ddd22d42db2b50e6a155439c8811b8f6df61a4395de10509714ad2751c6da817", [:rebar3], [{:certifi, "0.4.0", [hex: :certifi, optional: false]}, {:idna, "1.2.0", [hex: :idna, optional: false]}, {:metrics, "1.0.1", [hex: :metrics, optional: false]}, {:mimerl, "1.0.2", [hex: :mimerl, optional: false]}, {:ssl_verify_fun, "1.1.0", [hex: :ssl_verify_fun, optional: false]}]},
+  "html_entities": {:hex, :html_entities, "0.3.0", "2f278ffc69c3f0cbd5996628fef37cf922fa715f3e04b9f38924c8adced3f25a", [:mix], []},
   "httpoison": {:hex, :httpoison, "0.9.1", "6c2b4eaf2588a6f3ef29663d28c992531ca3f0bc832a97e0359bc822978e1c5d", [:mix], [{:hackney, "~> 1.6.0", [hex: :hackney, optional: false]}]},
   "idna": {:hex, :idna, "1.2.0", "ac62ee99da068f43c50dc69acf700e03a62a348360126260e87f2b54eced86b2", [:rebar3], []},
   "meck": {:hex, :meck, "0.8.4", "59ca1cd971372aa223138efcf9b29475bde299e1953046a0c727184790ab1520", [:rebar, :make], []},
@@ -13,4 +14,4 @@
   "mogrify": {:hex, :mogrify, "0.4.0", "bed8602f9e11bbdc9f795cf1e8f007368a630a8cd6a6b15b241ab8e311c332c5", [:mix], []},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.0", "edee20847c42e379bf91261db474ffbe373f8acb56e9079acb6038d4e0bf414f", [:rebar, :make], []},
   "tempfile": {:hex, :tempfile, "0.1.0", "2964afa1f653d133c61a818c84bb1b3c1a9c8e2f9f8489accb2e9c68cd0c1688", [:mix], []},
-  "tesla": {:hex, :tesla, "0.5.2", "614297046c638b8c1695e8b6e63e6bffd107c07a67e4cb8cc4bb46598be735f1", [:mix], [{:exjsx, ">= 0.1.0", [hex: :exjsx, optional: true]}, {:hackney, "~> 1.6.0", [hex: :hackney, optional: true]}, {:ibrowse, "~> 4.2", [hex: :ibrowse, optional: true]}, {:poison, ">= 1.0.0", [hex: :poison, optional: true]}]}}
+  "tesla": {:git, "https://github.com/teamon/tesla.git", "2fccb798592a8c0210fd7e6bf55e7eed3d72ce98", [branch: "master"]}}

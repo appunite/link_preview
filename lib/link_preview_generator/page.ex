@@ -25,36 +25,38 @@ defmodule LinkPreviewGenerator.Page do
   """
   @spec new(String.t) :: t | {:error, atom}
   def new(original_url) do
-    # case LinkPreviewGenerator.Requests.final_location(original_url) do
-    #   {:ok, location} ->
-    #     page = %__MODULE__{
-    #       original_url: original_url,
-    #       website_url: website_url(location)
-    #     }
-
-    #     {:ok, page}
-    #   {:error, reason} ->
-    #     {:error, reason}
-    # end
-
-    page = %__MODULE__{
+    %__MODULE__{
       original_url: original_url,
       website_url: website_url(original_url)
     }
-
-    {:ok, page}
   end
 
-  defp website_url(url) do
-    path = cond do
+  defp website_url(original_url) do
+    final_location = LinkPreviewGenerator.Requests.final_location(original_url)
+
+    (final_location || original_url)
+    |> remove_suffix
+    |> remove_prefix
+  end
+
+  defp remove_suffix(url) do
+    suffix = cond do
       String.match?(url, ~r/\Ahttp(s)?:\/\/([^\/]+\.)+[^\/]+/) ->
         String.replace(url, ~r/\Ahttp(s)?:\/\/([^\/]+\.)+[^\/]+/, "")
-      String.match?(url, ~r/\A([^\/]+\.)+[^\/]+/) ->
-        String.replace(url, ~r/\A([^\/]+\.)+[^\/]+/, "")
-      true ->
-        nil
+      String.match?(url, ~r/\A(\/)?([^\/]+\.)+[^\/]+/) ->
+        String.replace(url, ~r/\A(\/)?([^\/]+\.)+[^\/]+/, "")
+      :else ->
+        ""
     end
 
-    url |> String.replace_suffix(path, "")
+    url |> String.replace_suffix(suffix, "")
+  end
+
+  defp remove_prefix(url) do
+    if String.match?(url, ~r/\A(http(s)?:\/\/)?(www\.)?/) do
+      String.replace(url, ~r/\A(http(s)?:\/\/)?(www\.)?/, "")
+    else
+      url
+    end
   end
 end

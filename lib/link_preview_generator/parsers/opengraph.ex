@@ -8,26 +8,39 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
 
   @doc """
     Get page title based on first encountered og:title property.
+
+    Config options:
+    * `:friendly_strings`\n
+      see `LinkPreviewGenerator.Parsers.Basic.maybe_friendly_string/1` function\n
+      default: true
   """
   def title(page, body) do
     title =
       body
+      |> Floki.parse()
       |> Floki.find("meta[property^=\"og:title\"]")
       |> Floki.attribute("content")
-      |> List.first
+      |> List.first()
+      |> maybe_friendly_string()
 
     %Page{page | title: title}
   end
 
   @doc """
     Get page description based on first encountered og:description property.
+
+    Config options:
+    * `:friendly_strings`\n
+      see `LinkPreviewGenerator.Parsers.Basic.maybe_friendly_string/1` function\n
+      default: true
   """
   def description(page, body) do
     description =
       body
+      |> Floki.parse()
       |> Floki.find("meta[property^=\"og:description\"]")
       |> Floki.attribute("content")
-      |> List.first
+      |> List.first()
 
     %Page{page | description: description}
   end
@@ -38,6 +51,7 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
   def images(page, body) do
     images =
       body
+      |> Floki.parse()
       |> Floki.find("meta[property^=\"og:image\"]")
       |> Floki.attribute("content")
       |> Enum.map(&String.trim(&1))

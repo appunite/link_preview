@@ -11,13 +11,15 @@ defmodule LinkPreviewGenerator.Mixfile do
       description: description(),
       package: package(),
       deps: deps(),
-      aliases: aliases()
+      aliases: aliases(),
+      docs: [extras: ["README.md", "CHANGELOG.md"]]
     ]
   end
 
   defp description do
     """
-    LinkPreviewGenerator is a package that tries to receive meta information from given http(s) address
+    LinkPreviewGenerator is a package that tries to receive meta information from given http(s) address.
+    Link preview is returned as Page struct that includes website title, description, images and more.
     """
   end
 
@@ -32,18 +34,24 @@ defmodule LinkPreviewGenerator.Mixfile do
 
   def application do
     [
-      applications: [:floki, :logger, :mogrify, :tempfile, :tesla]
+      applications: [:floki, :logger, :tesla]
     ]
   end
 
   defp deps do
     [
-      {:ex_doc, "~> 0.12", only: :dev},
+      #required
       {:floki, "~> 0.10.0"},
-      {:mock, "~>0.1", only: :test},
-      {:mogrify, "~> 0.4.0"},
-      {:tempfile, "~> 0.1.0"},
-      {:tesla, "~> 0.5.0"}
+      {:tesla, github: "teamon/tesla", branch: "master"},
+
+      #optional
+      {:html_entities, "~> 0.2", optional: true},
+      {:mogrify, "~> 0.4.0", optional: true},
+      {:tempfile, "~> 0.1.0", optional: true},
+
+      #testing/docs
+      {:ex_doc, "~> 0.12", only: :dev},
+      {:mock, "~>0.1", only: :test}
     ]
   end
 

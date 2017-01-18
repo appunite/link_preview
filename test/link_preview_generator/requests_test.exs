@@ -1,34 +1,44 @@
 defmodule LinkPreviewGenerator.RequestsTest do
   use ExUnit.Case
-  alias LinkPreviewGenerator.{Page, Requests}
+  alias LinkPreviewGenerator.Requests
 
-  import Mock
+  @http "http://localhost:#{Application.get_env(:httparrot, :http_port)}"
 
-  @url "http://example.com/"
+  describe "image?/1" do
+    test "when url leads to image" do
+      assert Requests.image?(@http <> "/image")
+    end
 
-  # @ok %HTTPoison.Response{status_code: 200}
+    test "when url doesn't lead to image" do
+      refute Requests.image?(@http <> "/get")
+    end
+  end
 
-  # describe "#get" do
-  #   test "returns success tuple when url is valid" do
-  #     with_mock HTTPoison, [get: fn(_url, _h, _opts) -> {:ok, @ok} end] do
-  #       assert Requests.get(@url, [], []) == {:ok, @ok}
-  #     end
-  #   end
-  #
-  #   test "returns error tuple when url can cause badarg error" do
-  #     assert Requests.get("/invalid", [], []) == {:error, :badarg}
-  #   end
-  # end
-  #
-  # describe "#head" do
-  #   test "returns success tuple when url is valid" do
-  #     with_mock HTTPoison, [head: fn(_url, _h, _opts) -> {:ok, @ok} end] do
-  #       assert Requests.head(@url, [], []) == {:ok, @ok}
-  #     end
-  #   end
-  #
-  #   test "returns error tuple when url can cause badarg error" do
-  #     assert Requests.head("", [], []) == {:error, :badarg}
-  #   end
-  # end
+  describe "final_location/1" do
+    test "when given url returns status 200" do
+      url = @http <> "/status/200"
+
+      assert Requests.final_location(url) == url
+    end
+
+    test "when given url redirects to 200" do
+      redirect_to = @http <> "/status/200"
+      url = @http <> "/redirect-to?url=" <> redirect_to
+
+      assert Requests.final_location(url) == redirect_to
+    end
+
+    test "when given url returns status 4xx" do
+      url = @http <> "/status/404"
+
+      refute Requests.final_location(url)
+    end
+
+    test "when given url redirects to status 4xx" do
+      redirect_to = @http <> "/status/403"
+      url = @http <> "/redirect-to?url=" <> redirect_to
+
+      refute Requests.final_location(url)
+    end
+  end
 end

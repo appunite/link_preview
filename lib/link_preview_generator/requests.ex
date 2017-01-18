@@ -8,7 +8,7 @@ defmodule LinkPreviewGenerator.Requests do
   plug Tesla.Middleware.BaseUrl, "http://"
 
   @doc """
-    Check if given url leads to image
+    Check if given url leads to image.
   """
   @spec image?(String.t) :: boolean
   def image?(url) do
@@ -17,6 +17,9 @@ defmodule LinkPreviewGenerator.Requests do
     status == 200 && String.match?(headers["content-type"], ~r/\Aimage\//)
   end
 
+  @doc """
+    Follow redirections to check final website adress.
+  """
   @spec final_location(String.t) :: String.t | nil
   def final_location(url) do
     case head(url, opts: [autoredirect: false]) do

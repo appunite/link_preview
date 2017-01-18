@@ -33,10 +33,12 @@ defmodule LinkPreviewGenerator.Mixfile do
   end
 
   def application do
-    [
-      applications: [:floki, :logger, :tesla]
-    ]
+    [applications: applications(Mix.env)]
   end
+
+  def applications(:all),  do: [:floki, :logger, :tesla]
+  def applications(:test), do: applications(:all) ++ [:httparrot]
+  def applications(_),     do: applications(:all)
 
   defp deps do
     [
@@ -51,7 +53,8 @@ defmodule LinkPreviewGenerator.Mixfile do
 
       #testing/docs
       {:ex_doc, "~> 0.12", only: :dev},
-      {:mock, "~>0.1", only: :test}
+      {:httparrot, "~> 0.5.0", only: :test},
+      {:mock, "~> 0.1", only: :test}
     ]
   end
 

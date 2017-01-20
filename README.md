@@ -1,32 +1,30 @@
-# LinkPreviewGenerator
+# LinkPreview
 
-LinkPreviewGenerator is a package that tries to receive meta information from given http(s) address
+LinkPreview is a package that tries to receive meta information from given http(s) address
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
-
-  1. Add link_preview_generator to your list of dependencies in `mix.exs`:
+  1. Add link_preview to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:link_preview_generator, "~> 0.0.1"}]
+          [{:link_preview, "~> 1.0.0"}]
         end
 
-  2. Ensure link_preview_generator is started before your application:
+  2. For Elixir < 1.4 ensure link_preview is started before your application:
 
         def application do
-          [applications: [:link_preview_generator]]
+          [applications: [:link_preview]]
         end
 
 ## Example usage
 
 You just need to execute:
 
-    LinkPreviewGenerator.parse("www.yahoo.pl")
+    LinkPreview.parse("www.yahoo.pl")
 
 in response you'll receive
 
-    %LinkPreviewGenerator.Page{description: "News, email and search are just the beginning. Discover more every day. Find your yodel.",
+    %LinkPreview.Page{description: "News, email and search are just the beginning. Discover more every day. Find your yodel.",
       images: [%{url: "https://s.yimg.com/dh/ap/default/130909/y_200_a.png"}],
       original_url: "yahoo.pl", title: "Yahoo", website_url: "https://www.yahoo.com"}
 

@@ -1,13 +1,11 @@
-defmodule LinkPreviewGenerator.Mixfile do
+defmodule LinkPreview.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :link_preview_generator,
-      version: "0.0.5",
+      app: :link_preview,
+      version: "1.0.0",
       elixir: "~> 1.3",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
       description: description(),
       package: package(),
       deps: deps(),
@@ -18,7 +16,7 @@ defmodule LinkPreviewGenerator.Mixfile do
 
   defp description do
     """
-    LinkPreviewGenerator is a package that tries to receive meta information from given http(s) address.
+    LinkPreview is a package that tries to receive meta information from given http(s) address.
     Link preview is returned as Page struct that includes website title, description, images and more.
     """
   end
@@ -28,7 +26,7 @@ defmodule LinkPreviewGenerator.Mixfile do
       files: ["lib", "config", "mix.exs", "README.md", "CHANGELOG.md"],
       maintainers: ["Tobiasz Małecki", "Karol Wojtaszek"],
       licenses: ["Apache 2.0"],
-      links: %{"GitHub" => "https://github.com/appunite/link_preview_generator"}
+      links: %{"GitHub" => "https://github.com/appunite/link_preview"}
    ]
   end
 

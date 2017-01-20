@@ -1,4 +1,4 @@
-defmodule LinkPreviewGenerator.Requests do
+defmodule LinkPreview.Requests do
   @moduledoc """
     Module providing functions to handle needed requests.
   """

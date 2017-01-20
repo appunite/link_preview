@@ -1,4 +1,4 @@
-defmodule LinkPreviewGenerator.ParallelHelper do
+defmodule LinkPreview.ParallelHelper do
   @moduledoc false
 
   def map(collection, fun) do

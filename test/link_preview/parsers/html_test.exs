@@ -1,7 +1,7 @@
-defmodule LinkPreviewGenerator.Parsers.HtmlTest do
+defmodule LinkPreview.Parsers.HtmlTest do
   use ExUnit.Case
-  alias LinkPreviewGenerator.Parsers.Html
-  alias LinkPreviewGenerator.Page
+  alias LinkPreview.Parsers.Html
+  alias LinkPreview.Page
 
   import Mock
 
@@ -19,7 +19,7 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
   #   end
   #
   #   test "optimistic case without :friendly_strings" do
-  #     Application.put_env(:link_preview_generator, :friendly_strings, false)
+  #     Application.put_env(:link_preview, :friendly_strings, false)
   #
   #     assert Html.title(@page, @html) == %Page{@page | title: "\n      HTML Test  Title\n    "}
   #   end
@@ -35,7 +35,7 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
   #   end
   #
   #   test "optimistic case without :friendly_strings" do
-  #     Application.put_env(:link_preview_generator, :friendly_strings, false)
+  #     Application.put_env(:link_preview, :friendly_strings, false)
   #
   #     assert Html.description(@page, @html) == %Page{@page | description: "\n      HTML Test\n      Description\n    "}
   #   end
@@ -57,7 +57,7 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
   #
   #   test "optimistic case with :force_images_absolute_url" do
   #     with_mock HTTPoison, [head: fn(url, _, _) -> response_helper(url) end] do
-  #       Application.put_env(:link_preview_generator, :force_images_absolute_url, true)
+  #       Application.put_env(:link_preview, :force_images_absolute_url, true)
   #
   #       assert Html.images(@page, @html).images == [
   #         %{url: "http://example.com/images/html1.jpg"},
@@ -70,7 +70,7 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
   #
   #   test "optimistic case with :force_images_url_schema" do
   #     with_mock HTTPoison, [head: fn(url, _, _) -> response_helper(url) end] do
-  #       Application.put_env(:link_preview_generator, :force_images_url_schema, true)
+  #       Application.put_env(:link_preview, :force_images_url_schema, true)
   #
   #       assert Html.images(@page, @html).images == [
   #         %{url: "http://example.com/images/html1.jpg"},
@@ -81,8 +81,8 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
   #
   #   test "optimistic case with all additional options" do
   #     with_mock HTTPoison, [head: fn(url, _, _) -> response_helper(url) end] do
-  #       Application.put_env(:link_preview_generator, :force_images_absolute_url, true)
-  #       Application.put_env(:link_preview_generator, :force_images_url_schema, true)
+  #       Application.put_env(:link_preview, :force_images_absolute_url, true)
+  #       Application.put_env(:link_preview, :force_images_url_schema, true)
   #
   #       assert Html.images(@page, @html).images == [
   #         %{url: "http://example.com/images/html1.jpg"},
@@ -100,9 +100,9 @@ defmodule LinkPreviewGenerator.Parsers.HtmlTest do
   #
   # defp reset_defaults(tags) do
   #   on_exit fn ->
-  #     Application.put_env(:link_preview_generator, :friendly_strings, true)
-  #     Application.put_env(:link_preview_generator, :force_images_absolute_url, false)
-  #     Application.put_env(:link_preview_generator, :force_images_url_schema, false)
+  #     Application.put_env(:link_preview, :friendly_strings, true)
+  #     Application.put_env(:link_preview, :force_images_absolute_url, false)
+  #     Application.put_env(:link_preview, :force_images_url_schema, false)
   #   end
   #
   #   {:ok, tags}

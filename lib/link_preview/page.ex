@@ -1,4 +1,4 @@
-defmodule LinkPreviewGenerator.Page do
+defmodule LinkPreview.Page do
   @moduledoc """
     Provides struct to store results of data processing and helper function
     to initialize it.
@@ -32,7 +32,7 @@ defmodule LinkPreviewGenerator.Page do
   end
 
   defp website_url(original_url) do
-    final_location = LinkPreviewGenerator.Requests.final_location(original_url)
+    final_location = LinkPreview.Requests.final_location(original_url)
 
     (final_location || original_url)
     |> remove_suffix

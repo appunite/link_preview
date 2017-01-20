@@ -1,14 +1,14 @@
-defmodule LinkPreviewGenerator.Processor do
+defmodule LinkPreview.Processor do
   @moduledoc """
     Combines the logic of other modules with user input.
   """
-  alias LinkPreviewGenerator.{Page, Requests}
-  alias LinkPreviewGenerator.Parsers.{Basic, Opengraph, Html}
+  alias LinkPreview.{Page, Requests}
+  alias LinkPreview.Parsers.{Basic, Opengraph, Html}
 
   @doc """
     Takes url and returns result of processing.
   """
-  @spec call(String.t) :: LinkPreviewGenerator.success | LinkPreviewGenerator.failure
+  @spec call(String.t) :: LinkPreview.success | LinkPreview.failure
   def call(url) do
     case Requests.head(url) do
       %Tesla.Env{headers: %{"content-type" => "text/html" <> _}} ->
@@ -33,7 +33,7 @@ defmodule LinkPreviewGenerator.Processor do
     with  %Tesla.Env{status: 200, body: body} <- Requests.get(url),
           %Page{} = page                      <- Page.new(url)
     do
-      parsers = Application.get_env(:link_preview_generator, :parsers, [Opengraph, Html])
+      parsers = Application.get_env(:link_preview, :parsers, [Opengraph, Html])
       result_page = page |> collect_data(parsers, body)
 
       {:ok, result_page}

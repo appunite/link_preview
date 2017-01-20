@@ -1,6 +1,6 @@
-defmodule LinkPreviewGenerator.PageTest do
+defmodule LinkPreview.PageTest do
   use ExUnit.Case
-  alias LinkPreviewGenerator.Page
+  alias LinkPreview.Page
 
   import Mock
 
@@ -8,7 +8,7 @@ defmodule LinkPreviewGenerator.PageTest do
 
   # describe "#new" do
   #   test "returns success tuple when final location is valid" do
-  #     with_mock LinkPreviewGenerator.Requests, [final_location: fn(_url) -> {:ok, @original_url} end] do
+  #     with_mock LinkPreview.Requests, [final_location: fn(_url) -> {:ok, @original_url} end] do
   #       page = %Page{
   #         original_url: @original_url,
   #         website_url: "http://example.com",
@@ -19,7 +19,7 @@ defmodule LinkPreviewGenerator.PageTest do
   #   end
   #
   #   test "returns error tuple when final location is invalid" do
-  #     with_mock LinkPreviewGenerator.Requests, [final_location: fn(_url) -> {:error, :reason} end] do
+  #     with_mock LinkPreview.Requests, [final_location: fn(_url) -> {:error, :reason} end] do
   #       assert Page.new(@original_url) == {:error, :reason}
   #     end
   #   end

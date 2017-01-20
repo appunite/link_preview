@@ -1,17 +1,17 @@
-defmodule LinkPreviewGenerator.Parsers.Html do
+defmodule LinkPreview.Parsers.Html do
   @moduledoc """
     Parser implementation based on html tags.
   """
-  alias LinkPreviewGenerator.{Page, ParallelHelper, Requests}
+  alias LinkPreview.{Page, ParallelHelper, Requests}
 
-  use LinkPreviewGenerator.Parsers.Basic
+  use LinkPreview.Parsers.Basic
 
   @doc """
     Get page title based on first encountered title tag.
 
     Config options:
     * `:friendly_strings`\n
-      see `LinkPreviewGenerator.Parsers.Basic.maybe_friendly_string/1` function\n
+      see `LinkPreview.Parsers.Basic.maybe_friendly_string/1` function\n
       default: true
   """
   def title(page, body) do
@@ -32,7 +32,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
 
     Config options:
     * `:friendly_strings`\n
-      see `LinkPreviewGenerator.Parsers.Basic.maybe_friendly_string/1` function\n
+      see `LinkPreview.Parsers.Basic.maybe_friendly_string/1` function\n
       default: true
   """
   def description(page, body) do
@@ -46,7 +46,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
 
     Config options:
     * `:force_images_absolute_url`\n
-      try to add website url from `LinkPreviewGenerator.Page` struct to all
+      try to add website url from `LinkPreview.Page` struct to all
       relative urls then remove remaining relative urls from list\n
       default: false
     * `:force_images_url_schema`\n
@@ -102,11 +102,11 @@ defmodule LinkPreviewGenerator.Parsers.Html do
 
   defp maybe_limit(urls) do
     cond do
-      Application.get_env(:link_preview_generator, :force_images_absolute_url) ->
+      Application.get_env(:link_preview, :force_images_absolute_url) ->
         urls |> Enum.take(50)
-      Application.get_env(:link_preview_generator, :force_images_url_schema) ->
+      Application.get_env(:link_preview, :force_images_url_schema) ->
         urls |> Enum.take(50)
-      Application.get_env(:link_preview_generator, :filter_small_images) ->
+      Application.get_env(:link_preview, :filter_small_images) ->
         urls |> Enum.take(50)
       true ->
         urls
@@ -114,7 +114,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   end
 
   defp check_force_absolute_url(urls, page) do
-    if Application.get_env(:link_preview_generator, :force_images_absolute_url) do
+    if Application.get_env(:link_preview, :force_images_absolute_url) do
       urls
       |> Enum.map(&force_absolute_url(&1, page.website_url))
     else
@@ -123,7 +123,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   end
 
   defp check_force_url_schema(urls) do
-    if Application.get_env(:link_preview_generator, :force_images_url_schema) do
+    if Application.get_env(:link_preview, :force_images_url_schema) do
       urls
       |> Enum.map(&force_schema(&1))
     else
@@ -133,11 +133,11 @@ defmodule LinkPreviewGenerator.Parsers.Html do
 
   defp maybe_validate(urls) do
     cond do
-      Application.get_env(:link_preview_generator, :force_images_absolute_url) ->
+      Application.get_env(:link_preview, :force_images_absolute_url) ->
         urls |> validate_images
-      Application.get_env(:link_preview_generator, :force_images_url_schema) ->
+      Application.get_env(:link_preview, :force_images_url_schema) ->
         urls |> validate_images
-      Application.get_env(:link_preview_generator, :filter_small_images) ->
+      Application.get_env(:link_preview, :filter_small_images) ->
         urls |> validate_images
       true ->
         urls
@@ -145,7 +145,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
   end
 
   defp check_filter_small_images(urls) do
-    case Application.get_env(:link_preview_generator, :filter_small_images) do
+    case Application.get_env(:link_preview, :filter_small_images) do
       nil ->
         urls
       false ->
@@ -190,7 +190,7 @@ defmodule LinkPreviewGenerator.Parsers.Html do
     with                                         true <- Code.ensure_loaded?(Mogrify),
                                                  true <- Code.ensure_loaded?(Tempfile),
                                %Tesla.Env{body: body} <- Requests.get(url),
-                                 {:ok, tempfile_path} <- Tempfile.random("link_preview_generator"),
+                                 {:ok, tempfile_path} <- Tempfile.random("link_preview"),
                                                   :ok <- File.write(tempfile_path, body),
                                %Mogrify.Image{} = raw <- Mogrify.open(tempfile_path),
          %Mogrify.Image{width: width, height: height} <- Mogrify.verbose(raw),

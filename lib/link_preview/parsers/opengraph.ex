@@ -1,17 +1,17 @@
-defmodule LinkPreviewGenerator.Parsers.Opengraph do
+defmodule LinkPreview.Parsers.Opengraph do
   @moduledoc """
     Parser implementation based on opengraph.
   """
-  alias LinkPreviewGenerator.Page
+  alias LinkPreview.Page
 
-  use LinkPreviewGenerator.Parsers.Basic
+  use LinkPreview.Parsers.Basic
 
   @doc """
     Get page title based on first encountered og:title property.
 
     Config options:
     * `:friendly_strings`\n
-      see `LinkPreviewGenerator.Parsers.Basic.maybe_friendly_string/1` function\n
+      see `LinkPreview.Parsers.Basic.maybe_friendly_string/1` function\n
       default: true
   """
   def title(page, body) do
@@ -31,7 +31,7 @@ defmodule LinkPreviewGenerator.Parsers.Opengraph do
 
     Config options:
     * `:friendly_strings`\n
-      see `LinkPreviewGenerator.Parsers.Basic.maybe_friendly_string/1` function\n
+      see `LinkPreview.Parsers.Basic.maybe_friendly_string/1` function\n
       default: true
   """
   def description(page, body) do

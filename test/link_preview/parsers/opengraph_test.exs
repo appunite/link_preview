@@ -1,7 +1,7 @@
-defmodule LinkPreviewGenerator.Parsers.OpengraphTest do
+defmodule LinkPreview.Parsers.OpengraphTest do
   use ExUnit.Case
-  alias LinkPreviewGenerator.Parsers.Opengraph
-  alias LinkPreviewGenerator.Page
+  alias LinkPreview.Parsers.Opengraph
+  alias LinkPreview.Page
 
   @html File.read!("test/fixtures/html_example.html")
   @opengraph File.read!("test/fixtures/opengraph_example.html")

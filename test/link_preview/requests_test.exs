@@ -1,6 +1,6 @@
-defmodule LinkPreviewGenerator.RequestsTest do
+defmodule LinkPreview.RequestsTest do
   use ExUnit.Case
-  alias LinkPreviewGenerator.Requests
+  alias LinkPreview.Requests
 
   @http "http://localhost:#{Application.get_env(:httparrot, :http_port)}"
 

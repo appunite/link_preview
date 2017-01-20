@@ -1,17 +1,17 @@
-defmodule LinkPreviewGenerator.Parsers.Basic do
+defmodule LinkPreview.Parsers.Basic do
   @moduledoc """
     Basic Parser implementation.
 
     It provides overridable parsing functions that returns unchanged input
-    `LinkPreviewGenerator.Page.t` struct. Main reason behind this is to let
+    `LinkPreview.Page.t` struct. Main reason behind this is to let
     parsers work without need to implement all possible parsing functions.
     See `__using__/1` macro.
 
-    All parsing functions should take `LinkPreviewGenerator.Page.t` and
+    All parsing functions should take `LinkPreview.Page.t` and
     String with response body for parsed url as params and returns
-    `LinkPreviewGenerator.Page.t` as result.
+    `LinkPreview.Page.t` as result.
   """
-  alias LinkPreviewGenerator.Page
+  alias LinkPreview.Page
 
   @parsable [:title, :description, :images]
 
@@ -23,19 +23,19 @@ defmodule LinkPreviewGenerator.Parsers.Basic do
       import unquote(__MODULE__), only: [maybe_friendly_string: 1]
 
       @doc """
-        For more details see `LinkPreviewGenerator.Parsers.Basic` moduledoc
+        For more details see `LinkPreview.Parsers.Basic` moduledoc
       """
       @spec title(Page.t, String.t) :: Page.t
       def title(%Page{} = page, body), do: page
 
       @doc """
-        For more details see `LinkPreviewGenerator.Parsers.Basic` moduledoc
+        For more details see `LinkPreview.Parsers.Basic` moduledoc
       """
       @spec description(Page.t, String.t) :: Page.t
       def description(%Page{} = page, body), do: page
 
       @doc """
-        For more details see `LinkPreviewGenerator.Parsers.Basic` moduledoc
+        For more details see `LinkPreview.Parsers.Basic` moduledoc
       """
       @spec images(Page.t, String.t) :: Page.t
       def images(%Page{} = page, body), do: page
@@ -60,7 +60,7 @@ defmodule LinkPreviewGenerator.Parsers.Basic do
   @spec maybe_friendly_string(String.t | nil) :: String.t | nil
   def maybe_friendly_string(nil), do: nil
   def maybe_friendly_string(text) do
-    if Application.get_env(:link_preview_generator, :friendly_strings, true) do
+    if Application.get_env(:link_preview, :friendly_strings, true) do
       text
       |> String.trim
       |> String.replace(~r/\n|\r|\r\n/, " ")

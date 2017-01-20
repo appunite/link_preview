@@ -1,5 +1,9 @@
 # Changelog
 
+# 1.0.0
+
+* Renamed to LinkPreview
+
 # 0.0.5
 
 * Fixed error when final location is not absolute url
@@ -14,7 +18,7 @@
 
 # 0.0.3
 
-* LinkPreviewGenerator.parse/1 is no longer separate function, instead it is delegation to LinkPreviewGenerator.Processor.call/1
+* LinkPreview.parse/1 is no longer separate function, instead it is delegation to LinkPreview.Processor.call/1
 * Performance improvement (parallel processing, limiting big lists etc.)
 * Removed no longer needed helper functions for Page struct
 * Docs improvement

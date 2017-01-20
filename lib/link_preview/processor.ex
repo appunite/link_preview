@@ -3,7 +3,7 @@ defmodule LinkPreview.Processor do
     Combines the logic of other modules with user input.
   """
   alias LinkPreview.{Page, Requests}
-  alias LinkPreview.Parsers.{Basic, Opengraph, Html}
+  alias LinkPreview.Parsers.{Basic, Opengraph, Html, Image}
 
   @doc """
     Takes url and returns result of processing.
@@ -12,9 +12,11 @@ defmodule LinkPreview.Processor do
   def call(url) do
     case Requests.head(url) do
       %Tesla.Env{headers: %{"content-type" => "text/html" <> _}} ->
-        do_html_call(url)
+        parsers = Application.get_env(:link_preview, :parsers, [Opengraph, Html])
+
+        do_call(url, parsers)
       %Tesla.Env{headers: %{"content-type" => "image/" <> _}} ->
-        do_image_call(url)
+        do_image_call(url, [Image])
       _ ->
         %LinkPreview.Error{}
     end
@@ -22,17 +24,17 @@ defmodule LinkPreview.Processor do
     _, _ -> %LinkPreview.Error{}
   end
 
-  defp do_image_call(url) do
+  defp do_image_call(url, parsers) do
     url
     |> Page.new()
-    |> Map.merge(%{images: [%{url: url}]})
+    |> collect_data(parsers, nil)
   end
 
-  defp do_html_call(url) do
+  defp do_call(url, parsers) do
     with %Tesla.Env{status: 200, body: body} <- Requests.get(url) do
-      page = Page.new(url)
-      parsers = Application.get_env(:link_preview, :parsers, [Opengraph, Html])
-      collect_data(page, parsers, body)
+      url
+      |> Page.new()
+      |> collect_data(parsers, body)
     else
       _  -> %LinkPreview.Error{}
     end

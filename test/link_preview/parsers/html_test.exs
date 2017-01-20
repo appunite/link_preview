@@ -13,7 +13,7 @@ defmodule LinkPreview.Parsers.HtmlTest do
 
   setup [:reset_defaults]
 
-  describe "#title" do
+  describe "title" do
     test "optimistic case with :friendly_strings" do
       assert Html.title(@page, @html) == %Page{@page | title: "HTML Test Title"}
     end
@@ -29,7 +29,7 @@ defmodule LinkPreview.Parsers.HtmlTest do
     end
   end
 
-  describe "#description" do
+  describe "description" do
     test "optimistic case with :friendly_strings" do
       assert Html.description(@page, @html) == %Page{@page | description: "HTML Test Description"}
     end
@@ -45,7 +45,7 @@ defmodule LinkPreview.Parsers.HtmlTest do
     end
   end
 
-  describe "#images" do
+  describe "images" do
     test "optimistic case without additional options" do
       assert Html.images(@page, @html).images == [
         %{url: "http://example.com/images/html1.jpg"},

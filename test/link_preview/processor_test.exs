@@ -7,8 +7,6 @@ defmodule LinkPreview.ProcessorTest do
   @http "http://localhost:#{Application.get_env(:httparrot, :http_port)}/"
   @opengraph File.read!("test/fixtures/opengraph_example.html")
 
-  setup [:reset_defaults]
-
   describe "call when url leads to html" do
     setup [:reset_defaults]
 
@@ -26,17 +24,7 @@ defmodule LinkPreview.ProcessorTest do
 
   describe "call when url leads to image" do
     test "returns Page" do
-      %LinkPreview.Page{
-        title: nil,
-        description: nil,
-        original_url: original_url,
-        website_url: website_url,
-        images: images
-      } = LinkPreview.Processor.call(@http <> "image")
-
-      assert original_url
-      assert website_url
-      refute Enum.empty?(images)
+      assert %LinkPreview.Page{} = LinkPreview.Processor.call(@http <> "image")
     end
   end
 

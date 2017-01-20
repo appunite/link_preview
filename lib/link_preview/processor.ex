@@ -29,15 +29,12 @@ defmodule LinkPreview.Processor do
   end
 
   defp do_html_call(url) do
-    with  %Tesla.Env{status: 200, body: body} <- Requests.get(url),
-          %Page{} = page                      <- Page.new(url)
-    do
+    with %Tesla.Env{status: 200, body: body} <- Requests.get(url) do
+      page = Page.new(url)
       parsers = Application.get_env(:link_preview, :parsers, [Opengraph, Html])
-      result_page = page |> collect_data(parsers, body)
-
-      {:ok, result_page}
+      collect_data(page, parsers, body)
     else
-      _  -> :error
+      _  -> %LinkPreview.Error{}
     end
   end
 

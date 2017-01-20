@@ -1,17 +1,38 @@
 defmodule LinkPreview.ProcessorTest do
   use ExUnit.Case
+  alias LinkPreview.Parsers.{Opengraph, Html}
 
-  @http "http://localhost:#{Application.get_env(:httparrot, :http_port)}"
+  import Mock
 
-  describe "call" do
-    test "when url leads to image" do
+  @http "http://localhost:#{Application.get_env(:httparrot, :http_port)}/"
+  @opengraph File.read!("test/fixtures/opengraph_example.html")
+
+  setup [:reset_defaults]
+
+  describe "call when url leads to html" do
+    setup [:reset_defaults]
+
+    test "ignores missing parsers and returns Page" do
+      with_mock LinkPreview.Requests, [:passthrough], [
+        get:  fn(_)-> %Tesla.Env{status: 200, body: @opengraph} end,
+        head: fn(_)-> %Tesla.Env{status: 200, headers: %{"content-type" => "text/html"}} end
+      ] do
+        Application.put_env(:link_preview, :parsers, [Opengraph, Html, MissingOne])
+
+        assert %LinkPreview.Page{} = LinkPreview.Processor.call(@http <> "image")
+      end
+    end
+  end
+
+  describe "call when url leads to image" do
+    test "returns Page" do
       %LinkPreview.Page{
         title: nil,
         description: nil,
         original_url: original_url,
         website_url: website_url,
         images: images
-      } = LinkPreview.Processor.call(@http <> "/image")
+      } = LinkPreview.Processor.call(@http <> "image")
 
       assert original_url
       assert website_url
@@ -19,4 +40,17 @@ defmodule LinkPreview.ProcessorTest do
     end
   end
 
+  describe "call when url leads to unsupported format" do
+    test "returns Error" do
+      assert %LinkPreview.Error{} = LinkPreview.Processor.call(@http <> "robots.txt")
+    end
+  end
+
+  defp reset_defaults(opts) do
+    on_exit fn ->
+      Application.put_env(:link_preview, :parsers, nil)
+    end
+
+    {:ok, opts}
+  end
 end

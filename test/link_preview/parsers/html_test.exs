@@ -110,14 +110,14 @@ defmodule LinkPreview.Parsers.HtmlTest do
     end
   end
 
-  defp reset_defaults(tags) do
+  defp reset_defaults(opts) do
     on_exit fn ->
       Application.put_env(:link_preview, :friendly_strings, true)
       Application.put_env(:link_preview, :force_images_absolute_url, false)
       Application.put_env(:link_preview, :force_images_url_schema, false)
     end
 
-    {:ok, tags}
+    {:ok, opts}
   end
 
   defp response_helper(url) do

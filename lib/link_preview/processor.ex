@@ -27,8 +27,8 @@ defmodule LinkPreview.Processor do
 
   defp to_tuple(result) do
     case result do
-      %Page{}  -> {:ok, result}
-      %Error{} -> {:error, result}
+      %Page{}              -> {:ok, result}
+      %LinkPreview.Error{} -> {:error, result}
     end
   end
 
@@ -44,7 +44,7 @@ defmodule LinkPreview.Processor do
       |> Page.new()
       |> collect_data(parsers, body)
     else
-      _  -> {:error, %LinkPreview.Error{}}
+      _  -> %LinkPreview.Error{}
     end
   end
 

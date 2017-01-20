@@ -6,8 +6,7 @@ defmodule LinkPreview.Parsers.OpengraphTest do
   @html File.read!("test/fixtures/html_example.html")
   @opengraph File.read!("test/fixtures/opengraph_example.html")
 
-  @page %Page{original_url: "http://example.com/", website_url: "http://example.com/", images: []}
-
+  @page %Page{original_url: "http://example.com/", website_url: "example.com"}
 
   describe "#title" do
     test "optimistic case" do

@@ -30,7 +30,7 @@ in response you'll receive
 
 ## License
 
-  Copyright [2016] [Tobiasz Małecki <tobiasz.malecki@appunite.com>]
+  Copyright 2017 Tobiasz Małecki <tobiasz.malecki@appunite.com>
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.

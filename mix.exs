@@ -10,7 +10,8 @@ defmodule LinkPreview.Mixfile do
       package: package(),
       deps: deps(),
       aliases: aliases(),
-      docs: [extras: ["README.md", "CHANGELOG.md"]]
+      docs: [extras: ["README.md", "CHANGELOG.md"]],
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -50,6 +51,7 @@ defmodule LinkPreview.Mixfile do
       {:tempfile, "~> 0.1.0", optional: true},
 
       #testing/docs
+      {:excoveralls, "~> 0.6", only: :test},
       {:ex_doc, "~> 0.12", only: :dev},
       {:httparrot, "~> 0.5.0", only: :test},
       {:mock, "~> 0.1", only: :test}

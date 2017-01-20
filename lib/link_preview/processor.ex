@@ -16,11 +16,10 @@ defmodule LinkPreview.Processor do
       %Tesla.Env{headers: %{"content-type" => "image/" <> _}} ->
         do_image_call(url)
       _ ->
-        {:error, :unsupported_content_type}
+        %LinkPreview.Error{}
     end
   catch
-    _, %Tesla.Error{reason: reason} ->
-      {:error, reason}
+    _, _ -> %LinkPreview.Error{}
   end
 
   defp do_image_call(url) do
@@ -38,12 +37,7 @@ defmodule LinkPreview.Processor do
 
       {:ok, result_page}
     else
-      %Tesla.Env{status: status} when status != 200 ->
-        {:error, :cannot_reach_website}
-      {:error, reason} ->
-        {:error, reason}
-      _  ->
-        {:error, :unknown}
+      _  -> :error
     end
   end
 

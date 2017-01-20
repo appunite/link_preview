@@ -4,7 +4,7 @@ defmodule LinkPreview do
   """
 
   @type success :: LinkPreview.Page.t
-  @type failure :: {:error, atom}
+  @type failure :: LinkPreview.Error.t
 
   defdelegate parse(url), to: LinkPreview.Processor, as: :call
 end

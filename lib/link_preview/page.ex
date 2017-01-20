@@ -23,7 +23,7 @@ defmodule LinkPreview.Page do
   @doc """
     Initializes Page struct based on original url provided by user
   """
-  @spec new(String.t) :: t | {:error, atom}
+  @spec new(String.t) :: t
   def new(original_url) do
     %__MODULE__{
       original_url: original_url,

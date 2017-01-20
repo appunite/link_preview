@@ -1,11 +1,8 @@
 defmodule LinkPreview.ProcessorTest do
-  use ExUnit.Case
+  use LinkPreview.Case
   alias LinkPreview.Parsers.{Opengraph, Html}
 
   import Mock
-
-  @http "http://localhost:#{Application.get_env(:httparrot, :http_port)}/"
-  @opengraph File.read!("test/fixtures/opengraph_example.html")
 
   describe "call when url leads to html" do
     setup [:reset_defaults]
@@ -17,20 +14,20 @@ defmodule LinkPreview.ProcessorTest do
       ] do
         Application.put_env(:link_preview, :parsers, [Opengraph, Html, MissingOne])
 
-        assert %LinkPreview.Page{} = LinkPreview.Processor.call(@http <> "image")
+        assert {:ok, %LinkPreview.Page{}} = LinkPreview.Processor.call(@httparrot <> "/image")
       end
     end
   end
 
   describe "call when url leads to image" do
     test "returns Page" do
-      assert %LinkPreview.Page{} = LinkPreview.Processor.call(@http <> "image")
+      assert {:ok, %LinkPreview.Page{}} = LinkPreview.Processor.call(@httparrot <> "/image")
     end
   end
 
   describe "call when url leads to unsupported format" do
     test "returns Error" do
-      assert %LinkPreview.Error{} = LinkPreview.Processor.call(@http <> "robots.txt")
+      assert {:error, %LinkPreview.Error{}} = LinkPreview.Processor.call(@httparrot <> "/robots.txt")
     end
   end
 

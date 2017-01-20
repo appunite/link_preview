@@ -6,6 +6,7 @@ defmodule LinkPreview.Mixfile do
       app: :link_preview,
       version: "1.0.0",
       elixir: "~> 1.3",
+      elixirc_paths: elixirc_paths(Mix.env),
       description: description(),
       package: package(),
       deps: deps(),
@@ -38,6 +39,9 @@ defmodule LinkPreview.Mixfile do
   def applications(:all),  do: [:floki, :logger, :tesla]
   def applications(:test), do: applications(:all) ++ [:httparrot]
   def applications(_),     do: applications(:all)
+
+  defp elixirc_paths(:test), do: ["lib", "test/case.ex"]
+  defp elixirc_paths(_),     do: ["lib"]
 
   defp deps do
     [

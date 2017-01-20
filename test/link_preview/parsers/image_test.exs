@@ -1,5 +1,5 @@
 defmodule LinkPreview.Parsers.ImageTest do
-  use ExUnit.Case
+  use LinkPreview.Case
   alias LinkPreview.Parsers.Image
   alias LinkPreview.Page
 

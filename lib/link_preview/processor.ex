@@ -18,10 +18,18 @@ defmodule LinkPreview.Processor do
       %Tesla.Env{headers: %{"content-type" => "image/" <> _}} ->
         do_image_call(url, [Image])
       _ ->
-        %LinkPreview.Error{}
+        {:error, %LinkPreview.Error{}}
     end
+    |> to_tuple()
   catch
-    _, _ -> %LinkPreview.Error{}
+    _, _ -> {:error, %LinkPreview.Error{}}
+  end
+
+  defp to_tuple(result) do
+    case result do
+      %Page{}  -> {:ok, result}
+      %Error{} -> {:error, result}
+    end
   end
 
   defp do_image_call(url, parsers) do
@@ -36,7 +44,7 @@ defmodule LinkPreview.Processor do
       |> Page.new()
       |> collect_data(parsers, body)
     else
-      _  -> %LinkPreview.Error{}
+      _  -> {:error, %LinkPreview.Error{}}
     end
   end
 

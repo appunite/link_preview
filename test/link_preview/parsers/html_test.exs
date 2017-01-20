@@ -1,13 +1,9 @@
 defmodule LinkPreview.Parsers.HtmlTest do
-  use ExUnit.Case
+  use LinkPreview.Case
   alias LinkPreview.Parsers.Html
   alias LinkPreview.{Page, Requests}
 
   import Mock
-
-  @html File.read!("test/fixtures/html_example.html")
-  @image_spam File.read!("test/fixtures/html_image_spam_example.html")
-  @opengraph File.read!("test/fixtures/opengraph_example.html")
 
   @page %Page{original_url: "http://example.com/", website_url: "example.com"}
 

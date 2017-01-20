@@ -3,8 +3,17 @@ defmodule LinkPreview do
     Simple package for link previews.
   """
 
-  @type success :: LinkPreview.Page.t
-  @type failure :: LinkPreview.Error.t
+  @type success :: {:ok, LinkPreview.Page.t}
+  @type failure :: {:ok, LinkPreview.Error.t}
 
-  defdelegate parse(url), to: LinkPreview.Processor, as: :call
+  defdelegate create(url), to: LinkPreview.Processor, as: :call
+
+  def create!(url) do
+    case LinkPreview.Processor.call(url) do
+      {:ok, page} ->
+        page
+      {:error, error} ->
+        raise error
+    end
+  end
 end

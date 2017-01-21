@@ -1,18 +1,27 @@
 defmodule LinkPreview.Mixfile do
   use Mix.Project
 
+  @version "1.0.0"
+
   def project do
     [
+      aliases: aliases(),
       app: :link_preview,
-      version: "1.0.0",
+      deps: deps(),
+      description: description(),
+      docs: [
+        extras: ["README.md", "CHANGELOG.md"]
+      ],
       elixir: "~> 1.3",
       elixirc_paths: elixirc_paths(Mix.env),
-      description: description(),
+      homepage_url: "https://appunite.com",
+      name: "Link Preview",
       package: package(),
-      deps: deps(),
-      aliases: aliases(),
-      docs: [extras: ["README.md", "CHANGELOG.md"]],
-      test_coverage: [tool: ExCoveralls]
+      source_url: "https://github.com/appunite/link_preview",
+      test_coverage: [
+        tool: ExCoveralls
+      ],
+      version: @version
     ]
   end
 
@@ -28,7 +37,10 @@ defmodule LinkPreview.Mixfile do
       files: ["lib", "config", "mix.exs", "README.md", "CHANGELOG.md"],
       maintainers: ["Tobiasz Małecki", "Karol Wojtaszek"],
       licenses: ["Apache 2.0"],
-      links: %{"GitHub" => "https://github.com/appunite/link_preview"}
+      links: %{
+        "GitHub" => "https://github.com/appunite/link_preview",
+        "Sponsor" => "https://appunite.com"
+      }
    ]
   end
 

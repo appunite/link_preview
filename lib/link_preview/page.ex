@@ -6,18 +6,21 @@ defmodule LinkPreview.Page do
 
   defstruct [
     original_url: nil,
-    website_url: nil,
-    title: nil,
-    description: nil,
-    images: []
+    website_url:  nil,
+    title:        nil,
+    description:  nil,
+    images:       []
   ]
+
+  @type image_map  :: %{url: String.t}
+  @type image_list :: [image_map | image_list] | []
 
   @type t :: %__MODULE__{
     original_url: String.t | nil,
-    website_url: String.t | nil,
-    title: String.t | nil,
-    description: String.t | nil,
-    images: list
+    website_url:  String.t | nil,
+    title:        String.t | nil,
+    description:  String.t | nil,
+    images:       image_list
   }
 
   @doc """

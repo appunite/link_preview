@@ -7,7 +7,10 @@ LinkPreview is a package that tries to receive meta information from given http(
   1. Add link_preview to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:link_preview, "~> 1.0.0"}]
+          [
+            {:link_preview, "~> 1.0.0"},
+            {:tesla, github: "teamon/tesla", override: true}
+          ]
         end
 
   2. For Elixir < 1.4 ensure link_preview is started before your application:
@@ -20,13 +23,17 @@ LinkPreview is a package that tries to receive meta information from given http(
 
 You just need to execute:
 
-    LinkPreview.parse("www.yahoo.pl")
+    LinkPreview.create("www.yahoo.pl")
 
 in response you'll receive
 
-    %LinkPreview.Page{description: "News, email and search are just the beginning. Discover more every day. Find your yodel.",
+    %LinkPreview.Page{
+      description: "News, email and search are just the beginning. Discover more every day. Find your yodel.",
       images: [%{url: "https://s.yimg.com/dh/ap/default/130909/y_200_a.png"}],
-      original_url: "yahoo.pl", title: "Yahoo", website_url: "https://www.yahoo.com"}
+      original_url: "yahoo.pl",
+      title: "Yahoo",
+      website_url: "https://www.yahoo.com"
+    }
 
 ## License
 

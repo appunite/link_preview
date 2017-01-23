@@ -6,6 +6,7 @@ defmodule LinkPreview.Requests do
 
   adapter :httpc, [body_format: :binary]
   plug Tesla.Middleware.BaseUrl, "http://"
+  plug Tesla.Middleware.DecompressResponse
 
   @doc """
     Check if given url leads to image.

@@ -69,7 +69,7 @@ defmodule LinkPreview.Parsers.Util do
   end
 
   defp force_absolute_url(url, website_url) do
-    with           false <- String.match?(url, ~r/\A(http(s)?:\/\/)?([^\/]+\.)+[^\/]+/),
+    with           false <- String.match?(url, ~r/\A((http(s)?:)?\/\/)?([^\/]+\.)+[^\/]+/),
                   prefix <- website_url |> String.replace_suffix("/", ""),
                   suffix <- url |> String.replace_prefix("/", "")
     do
@@ -82,7 +82,6 @@ defmodule LinkPreview.Parsers.Util do
   defp force_schema("http://" <> _ = url),  do: url
   defp force_schema("https://" <> _ = url), do: url
   defp force_schema("//" <> _ = url),       do: "http:" <> url
-  defp force_schema("/" <> _ = url),        do: "http:/" <> url
   defp force_schema(url),                   do: "http://" <> url
 
   defp validate_images(urls) do

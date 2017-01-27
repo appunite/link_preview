@@ -22,7 +22,10 @@ defmodule LinkPreview.Processor do
     end
     |> to_tuple()
   catch
-    _, _ -> {:error, %LinkPreview.Error{}}
+    _, %{message: message, __struct__: origin} ->
+      {:error, %LinkPreview.Error{origin: origin, message: message}}
+    _, _ ->
+      {:error, %LinkPreview.Error{origin: :unknown}}
   end
 
   defp to_tuple(result) do

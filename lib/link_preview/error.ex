@@ -1,3 +1,3 @@
 defmodule LinkPreview.Error do
-  defexception message: "", reason: nil
+  defexception message: "", origin: nil
 end

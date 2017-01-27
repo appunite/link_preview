@@ -17,6 +17,11 @@ defmodule LinkPreview.Mixfile do
       homepage_url: "https://appunite.com",
       name: "Link Preview",
       package: package(),
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.travis": :test
+      ],
       source_url: "https://github.com/appunite/link_preview",
       test_coverage: [
         tool: ExCoveralls

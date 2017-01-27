@@ -41,12 +41,25 @@ defmodule LinkPreview.Parsers.Opengraph do
       |> Floki.find("meta[property^=\"og:description\"]")
       |> Floki.attribute("content")
       |> List.first()
+      |> maybe_friendly_string()
 
     %Page{page | description: description}
   end
 
   @doc """
     Get page images based on og:image property.
+
+    Config options:
+    * `:force_images_absolute_url`\n
+      try to add website url from `LinkPreview.Page` struct to all
+      relative urls then remove remaining relative urls from list\n
+      default: false
+    * `:force_images_url_schema`\n
+      try to add http:// to urls without schema then remove all invalid urls\n
+      default: false
+    \n
+    WARNING: Using these options may reduce performance. To prevent very long processing time
+    images limited to first 50 by design.
   """
   def images(page, body) do
     images =
@@ -55,6 +68,9 @@ defmodule LinkPreview.Parsers.Opengraph do
       |> Floki.find("meta[property^=\"og:image\"]")
       |> Floki.attribute("content")
       |> Enum.map(&String.trim(&1))
+      |> maybe_force_absolute_url(page)
+      |> maybe_force_url_schema
+      |> maybe_validate
       |> Enum.map(&(%{url: &1}))
 
     %Page{page | images: images}

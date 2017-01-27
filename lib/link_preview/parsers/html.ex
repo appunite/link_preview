@@ -68,12 +68,12 @@ defmodule LinkPreview.Parsers.Html do
       body
       |> Floki.parse
       |> Floki.attribute("img", "src")
-      |> maybe_limit
-      |> check_force_absolute_url(page)
-      |> check_force_url_schema
-      |> maybe_validate
-      |> check_filter_small_images
       |> Enum.map(&String.trim(&1))
+      |> maybe_limit
+      |> maybe_force_absolute_url(page)
+      |> maybe_force_url_schema
+      |> maybe_validate
+      |> maybe_filter_small_images
       |> Enum.map(&(%{url: &1}))
 
     %Page{page | images: images}
@@ -113,38 +113,7 @@ defmodule LinkPreview.Parsers.Html do
     end
   end
 
-  defp check_force_absolute_url(urls, page) do
-    if Application.get_env(:link_preview, :force_images_absolute_url) do
-      urls
-      |> Enum.map(&force_absolute_url(&1, page.website_url))
-    else
-      urls
-    end
-  end
-
-  defp check_force_url_schema(urls) do
-    if Application.get_env(:link_preview, :force_images_url_schema) do
-      urls
-      |> Enum.map(&force_schema(&1))
-    else
-      urls
-    end
-  end
-
-  defp maybe_validate(urls) do
-    cond do
-      Application.get_env(:link_preview, :force_images_absolute_url) ->
-        urls |> validate_images
-      Application.get_env(:link_preview, :force_images_url_schema) ->
-        urls |> validate_images
-      Application.get_env(:link_preview, :filter_small_images) ->
-        urls |> validate_images
-      true ->
-        urls
-    end
-  end
-
-  defp check_filter_small_images(urls) do
+  defp maybe_filter_small_images(urls) do
     case Application.get_env(:link_preview, :filter_small_images) do
       nil ->
         urls
@@ -159,31 +128,6 @@ defmodule LinkPreview.Parsers.Html do
         |> ParallelHelper.map(&filter_small_images(&1, value))
         |> Enum.reject(&is_nil(&1))
     end
-  end
-
-  defp force_absolute_url(url, website_url) do
-    with           false <- String.match?(url, ~r/\A(http(s)?:\/\/)?([^\/]+\.)+[^\/]+/),
-                  prefix <- website_url |> String.replace_suffix("/", ""),
-                  suffix <- url |> String.replace_prefix("/", "")
-    do
-      prefix <> "/" <> suffix
-    else
-      true -> url
-    end
-  end
-
-  defp force_schema("http://" <> _ = url), do: url
-  defp force_schema("https://" <> _ = url), do: url
-  defp force_schema(url), do: "http://" <> url
-
-  defp validate_images(urls) do
-    urls
-    |> ParallelHelper.map(&validate_image(&1))
-    |> Enum.reject(&is_nil(&1))
-  end
-
-  defp validate_image(url) do
-    if Requests.image?(url), do: url
   end
 
   defp filter_small_images(url, min_size) do

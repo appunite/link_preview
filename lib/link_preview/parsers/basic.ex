@@ -20,7 +20,7 @@ defmodule LinkPreview.Parsers.Basic do
   """
   defmacro __using__(_opts) do
     quote do
-      import unquote(__MODULE__), only: [maybe_friendly_string: 1]
+      import LinkPreview.Parsers.Util
 
       @doc """
         For more details see `LinkPreview.Parsers.Basic` moduledoc
@@ -49,33 +49,4 @@ defmodule LinkPreview.Parsers.Basic do
   """
   @spec parsable :: list
   def parsable, do: @parsable
-
-  @doc """
-    Removes leading and trailing whitespaces.\n
-    Changes rest of newline characters to space and replace all multiple
-    spaces by single space.\n
-    If HtmlEntities optional package is loaded then decodes html entities,
-    e.g. &quot
-  """
-  @spec maybe_friendly_string(String.t | nil) :: String.t | nil
-  def maybe_friendly_string(nil), do: nil
-  def maybe_friendly_string(text) do
-    if Application.get_env(:link_preview, :friendly_strings, true) do
-      text
-      |> String.trim
-      |> String.replace(~r/\n|\r|\r\n/, " ")
-      |> String.replace(~r/\ +/, " ")
-      |> decode_html()
-    else
-      text
-    end
-  end
-
-  defp decode_html(text) do
-    if Code.ensure_loaded?(HtmlEntities) do
-      text |> HtmlEntities.decode()
-    else
-      text
-    end
-  end
 end

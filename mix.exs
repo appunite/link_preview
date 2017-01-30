@@ -33,7 +33,7 @@ defmodule LinkPreview.Mixfile do
   defp description do
     """
     LinkPreview is a package that tries to receive meta information from given http(s) address.
-    Returned Page struct includes website title, description, images and more.
+    Generated page struct includes website title, description, images and more.
     """
   end
 

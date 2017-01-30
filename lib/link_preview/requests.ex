@@ -2,7 +2,7 @@ defmodule LinkPreview.Requests do
   @moduledoc """
     Module providing functions to handle needed requests.
   """
-  use Tesla
+  use Tesla, docs: false, only: ~w(get head)a
 
   @redirect_statuses [301, 302, 307, 308]
 

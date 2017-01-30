@@ -43,7 +43,6 @@ defmodule LinkPreview.Parsers.HtmlTest do
       assert Enum.count(images) == 73
     end
 
-    @tag :excluded
     test "limits images with :force_images_absolute_url" do
       Application.put_env(:link_preview, :force_images_absolute_url, true)
 
@@ -60,7 +59,7 @@ defmodule LinkPreview.Parsers.HtmlTest do
 
     @tag :excluded
     test "limits images with :filter_small_images" do
-      Application.put_env(:link_preview, :filter_small_images, true)
+      Application.put_env(:link_preview, :filter_small_images, 1)
 
       images = Html.images(@page, @image_spam).images
       assert Enum.count(images) == 50

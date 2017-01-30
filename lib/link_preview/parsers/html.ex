@@ -121,16 +121,16 @@ defmodule LinkPreview.Parsers.Html do
         urls
       true ->
         urls
-        |> ParallelHelper.map(&filter_small_images(&1, 100))
+        |> ParallelHelper.map(&filter_small_image(&1, 100))
         |> Enum.reject(&is_nil(&1))
       value ->
         urls
-        |> ParallelHelper.map(&filter_small_images(&1, value))
+        |> ParallelHelper.map(&filter_small_image(&1, value))
         |> Enum.reject(&is_nil(&1))
     end
   end
 
-  defp filter_small_images(url, min_size) do
+  defp filter_small_image(url, min_size) do
     with                                         true <- Code.ensure_loaded?(Mogrify),
                                                  true <- Code.ensure_loaded?(Tempfile),
                                %Tesla.Env{body: body} <- Requests.get(url),

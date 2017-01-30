@@ -64,7 +64,7 @@ defmodule LinkPreview.Mixfile do
     [
       #required
       {:floki, "~> 0.10.0"},
-      {:tesla, github: "teamon/tesla", branch: "master"},
+      {:tesla, "~> 0.6.0"},
 
       #optional
       {:html_entities, "~> 0.2", optional: true},

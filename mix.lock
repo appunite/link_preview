@@ -23,4 +23,4 @@
   "ranch": {:hex, :ranch, "1.2.1", "a6fb992c10f2187b46ffd17ce398ddf8a54f691b81768f9ef5f461ea7e28c762", [:make], []},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.0", "edee20847c42e379bf91261db474ffbe373f8acb56e9079acb6038d4e0bf414f", [:make, :rebar], []},
   "tempfile": {:hex, :tempfile, "0.1.0", "2964afa1f653d133c61a818c84bb1b3c1a9c8e2f9f8489accb2e9c68cd0c1688", [:mix], []},
-  "tesla": {:git, "https://github.com/teamon/tesla.git", "2fccb798592a8c0210fd7e6bf55e7eed3d72ce98", [branch: "master"]}}
+  "tesla": {:hex, :tesla, "0.6.0", "ede6f50c4f7d57d6787c313c30279b1d7176c362cd6f39993166375f540ec368", [:mix], [{:exjsx, ">= 0.1.0", [hex: :exjsx, optional: true]}, {:fuse, "~> 2.4", [hex: :fuse, optional: true]}, {:hackney, "~> 1.6.0", [hex: :hackney, optional: true]}, {:ibrowse, "~> 4.2", [hex: :ibrowse, optional: true]}, {:poison, ">= 1.0.0", [hex: :poison, optional: true]}]}}

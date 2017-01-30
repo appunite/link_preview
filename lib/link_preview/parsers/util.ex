@@ -6,11 +6,14 @@ defmodule LinkPreview.Parsers.Util do
   alias LinkPreview.{ParallelHelper, Requests}
 
   @doc """
-    Removes leading and trailing whitespaces.\n
-    Changes rest of newline characters to space and replace all multiple
-    spaces by single space.\n
-    If HtmlEntities optional package is loaded then decodes html entities,
-    e.g. &quot
+    When `:friendly_string` is set to true, given url will be converted to
+    more human friedly format
+
+    * Removes leading and trailing whitespaces.
+    * Changes rest of newline characters to space and replace all multiple
+      spaces by single space.
+    * If HtmlEntities optional package is loaded then decodes html entities,
+      e.g. &quot
   """
   @spec maybe_friendly_string(String.t | nil) :: String.t | nil
   def maybe_friendly_string(nil), do: nil
@@ -26,7 +29,21 @@ defmodule LinkPreview.Parsers.Util do
     end
   end
 
-  @doc "TODO"
+  @doc """
+    When `:force_images_absolute_url` is set to true, website_url from page struct will
+    be prepend to all relative urls. Absolute urls remain unchanged.
+
+    Example:
+      iex> page = %Page{website_url: "example.com"}
+
+      iex> maybe_force_absolute_url(["another_page/image.jpg", "/assets/image.jpg"], page)
+      ["another_page/image.jpg", "/assets/image.jpg"]
+
+      iex> Application.put_env(:link_preview, :force_images_absolute_url, true)
+
+      iex> maybe_force_absolute_url(["another_page/image.jpg", "/assets/image.jpg"], page)
+      ["another_page/image.jpg", "example.com/assets/image.jpg"]
+  """
   def maybe_force_absolute_url(urls, page) do
     if Application.get_env(:link_preview, :force_images_absolute_url) do
       urls
@@ -36,7 +53,19 @@ defmodule LinkPreview.Parsers.Util do
     end
   end
 
-  @doc "TODO"
+  @doc """
+    When `:force_images_url_schema` is set to true, `http://` will
+    be prepend to all urls without schema.
+
+    Example:
+      iex> maybe_force_url_schema(["page1/image.jpg", "https:://page2/image.jpg"])
+      ["page1/image.jpg", "https:://page2/image.jpg"]
+
+      iex> Application.put_env(:link_preview, :force_images_url_schema, true)
+
+      iex> maybe_force_url_schema(["page1/image.jpg", "https:://page2/image.jpg"])
+      ["http://page1/image.jpg", "https:://page2/image.jpg"]
+  """
   def maybe_force_url_schema(urls) do
     if Application.get_env(:link_preview, :force_images_url_schema) do
       urls
@@ -46,7 +75,10 @@ defmodule LinkPreview.Parsers.Util do
     end
   end
 
-  @doc "TODO"
+  @doc """
+    Check if given urls leads to images when some url-changing options are
+    enabled.
+  """
   def maybe_validate(urls) do
     cond do
       Application.get_env(:link_preview, :force_images_absolute_url) ->
@@ -61,7 +93,9 @@ defmodule LinkPreview.Parsers.Util do
   end
 
   defp decode_html(text) do
-    if Code.ensure_loaded?(HtmlEntities) do
+    code = Application.get_env(:link_preview, :code_module, Code)
+
+    if code.ensure_loaded?(HtmlEntities) do
       text |> HtmlEntities.decode()
     else
       text

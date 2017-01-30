@@ -1,6 +1,7 @@
 {
   "skip_files": [
-    "test/support"
+    "test/support",
+    "lib/link_preview/parallel_helper.ex"
   ],
   "coverage_options": {
     "treat_no_relevant_lines_as_covered": true,

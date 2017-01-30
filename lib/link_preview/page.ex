@@ -56,10 +56,6 @@ defmodule LinkPreview.Page do
   end
 
   defp remove_prefix(url) do
-    if String.match?(url, ~r/\A(http(s)?:\/\/)?(www\.)?/) do
-      String.replace(url, ~r/\A(http(s)?:\/\/)?(www\.)?/, "")
-    else
-      url
-    end
+    String.replace(url, ~r/\A(http(s)?:\/\/)?(www\.)?/, "")
   end
 end

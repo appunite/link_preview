@@ -83,6 +83,10 @@ defmodule LinkPreview.Parsers.UtilTest do
       assert Util.maybe_force_absolute_url(["//example.com/img"], page) == ["//example.com/img"]
     end
 
+    test "absolute url including port number", %{page: page} do
+      assert Util.maybe_force_absolute_url(["localhost:4000/img"], page) == ["localhost:4000/img"]
+    end
+
     test "relative url", %{page: page} do
       assert Util.maybe_force_absolute_url(["/img"], page) == ["example.com/img"]
     end

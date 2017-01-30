@@ -103,10 +103,10 @@ defmodule LinkPreview.Parsers.Util do
   end
 
   defp force_absolute_url(url, website_url) do
-    with           false <- String.match?(url, ~r/\A((http(s)?:)?\/\/)?([^\/]+\.)+[^\/]+/),
-                  prefix <- website_url |> String.replace_suffix("/", ""),
-                  suffix <- url |> String.replace_prefix("/", "")
-    do
+    with false <- String.match?(url, ~r/\A([^\/]|\/\/[^\/])/) do
+      prefix = website_url |> String.replace_suffix("/", "")
+      suffix = url |> String.replace_prefix("/", "")
+
       prefix <> "/" <> suffix
     else
       true -> url

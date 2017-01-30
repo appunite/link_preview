@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/appunite/link_preview.svg?branch=master)](https://travis-ci.org/appunite/link_preview)
 [![Coverage Status](https://coveralls.io/repos/github/appunite/link_preview/badge.svg?branch=master)](https://coveralls.io/github/appunite/link_preview?branch=master)
+[![Hex.pm](https://img.shields.io/hexpm/v/link_preview.svg?style=flat&colorB=6B4D90)](https://hex.pm/packages/link_preview)
 
 # LinkPreview
 

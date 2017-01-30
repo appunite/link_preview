@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/appunite/link_preview.svg?branch=master)](https://travis-ci.org/appunite/link_preview)
+
 # LinkPreview
 
 LinkPreview is a package that tries to receive meta information from given http(s) address

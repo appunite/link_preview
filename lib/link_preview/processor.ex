@@ -42,13 +42,11 @@ defmodule LinkPreview.Processor do
   end
 
   defp do_call(url, parsers) do
-    with %Tesla.Env{status: 200, body: body} <- Requests.get(url) do
-      url
-      |> Page.new()
-      |> collect_data(parsers, body)
-    else
-      _  -> %LinkPreview.Error{}
-    end
+    %Tesla.Env{status: 200, body: body} = Requests.get(url)
+
+    url
+    |> Page.new()
+    |> collect_data(parsers, body)
   end
 
   defp collect_data(page, parsers, body) do

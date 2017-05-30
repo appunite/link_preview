@@ -13,7 +13,7 @@ LinkPreview is a package that tries to receive meta information from given http(
   ```elixir
   def deps do
     [
-      {:link_preview, "~> 1.0.0"}
+      {:link_preview, "~> 1.0.1"}
     ]
   end
   ```
@@ -37,13 +37,13 @@ LinkPreview.create("www.yahoo.pl")
 in response you'll receive
 
 ```elixir
-%LinkPreview.Page{
+{:ok, %LinkPreview.Page{
   description: "News, email and search are just the beginning. Discover more every day. Find your yodel.",
   images: [%{url: "https://s.yimg.com/dh/ap/default/130909/y_200_a.png"}],
   original_url: "www.yahoo.pl",
   title: "Yahoo",
   website_url: "yahoo.com"
-}
+}}
 ```
 
 ## License

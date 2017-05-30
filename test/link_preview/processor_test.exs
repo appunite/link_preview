@@ -9,8 +9,8 @@ defmodule LinkPreview.ProcessorTest do
 
     test "ignores missing parsers and returns Page" do
       with_mock LinkPreview.Requests, [:passthrough], [
-        get:  fn(_)-> %Tesla.Env{status: 200, body: @opengraph} end,
-        head: fn(_)-> %Tesla.Env{status: 200, headers: %{"content-type" => "text/html"}} end
+        get:  fn(_)-> {:ok, %Tesla.Env{status: 200, body: @opengraph}} end,
+        head: fn(_)-> {:ok, %Tesla.Env{status: 200, headers: %{"content-type" => "text/html"}}} end
       ] do
         Application.put_env(:link_preview, :parsers, [Opengraph, Html, MissingOne])
 

@@ -4,9 +4,8 @@ defmodule LinkPreview.Requests do
   """
   use Tesla, docs: false, only: ~w(get head)a
 
-  @redirect_statuses [301, 302, 307, 308]
-
   adapter :httpc, [body_format: :binary]
+  plug Tesla.Middleware.Tuples
   plug Tesla.Middleware.BaseUrl, "http://"
   plug Tesla.Middleware.DecompressResponse
   plug Tesla.Middleware.FollowRedirects
@@ -16,10 +15,13 @@ defmodule LinkPreview.Requests do
   """
   @spec image?(String.t) :: boolean
   def image?(url) do
-    %Tesla.Env{status: status, headers: headers} = head(url)
-
-    status == 200 && String.match?(headers["content-type"], ~r/\Aimage\//)
-  catch
-    _, %Tesla.Error{} -> false
+    case head(url) do
+      {:ok, %Tesla.Env{status: 200, headers: headers}} ->
+        String.match?(headers["content-type"], ~r/\Aimage\//)
+      {:ok, %Tesla.Env{}} ->
+        false
+      {:error, %Tesla.Error{}} ->
+        false
+    end
   end
 end

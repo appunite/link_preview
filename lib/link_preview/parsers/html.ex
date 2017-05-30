@@ -133,7 +133,7 @@ defmodule LinkPreview.Parsers.Html do
   defp filter_small_image(url, min_size) do
     with                                         true <- Code.ensure_loaded?(Mogrify),
                                                  true <- Code.ensure_loaded?(Tempfile),
-                               %Tesla.Env{body: body} <- Requests.get(url),
+                        {:ok, %Tesla.Env{body: body}} <- Requests.get(url),
                                  {:ok, tempfile_path} <- Tempfile.random("link_preview"),
                                                   :ok <- File.write(tempfile_path, body),
                                %Mogrify.Image{} = raw <- Mogrify.open(tempfile_path),

@@ -11,18 +11,20 @@ defmodule LinkPreview.Processor do
   @spec call(String.t) :: LinkPreview.success | LinkPreview.failure
   def call(url) do
     case Requests.head(url) do
-      %Tesla.Env{url: final_url, headers: %{"content-type" => "text/html" <> _}} ->
+      {:ok, %Tesla.Env{status: 200, url: final_url, headers: %{"content-type" => "text/html" <> _}}} ->
         parsers = Application.get_env(:link_preview, :parsers, [Opengraph, Html])
 
         do_call(url, final_url, parsers)
-      %Tesla.Env{url: final_url, headers: %{"content-type" => "image/" <> _}} ->
+      {:ok, %Tesla.Env{status: 200, url: final_url, headers: %{"content-type" => "image/" <> _}}} ->
         do_image_call(url, final_url, [Image])
-      _ ->
-        %LinkPreview.Error{}
+      {:ok, _} ->
+        %LinkPreview.Error{origin: LinkPreview, message: "unsupported response"}
+      {:error, %{__struct__: origin, message: message}} ->
+        %LinkPreview.Error{origin: origin, message: message}
     end
     |> to_tuple()
   catch
-    _, %{message: message, __struct__: origin} ->
+    _, %{__struct__: origin, message: message} ->
       {:error, %LinkPreview.Error{origin: origin, message: message}}
     _, _ ->
       {:error, %LinkPreview.Error{origin: :unknown}}
@@ -42,11 +44,14 @@ defmodule LinkPreview.Processor do
   end
 
   defp do_call(url, final_url, parsers) do
-    %Tesla.Env{status: 200, body: body} = Requests.get(url)
-
-    url
-    |> Page.new(final_url)
-    |> collect_data(parsers, body)
+    case Requests.get(url) do
+      {:ok, %Tesla.Env{status: 200, body: body}} ->
+        url
+        |> Page.new(final_url)
+        |> collect_data(parsers, body)
+      _ ->
+        %LinkPreview.Error{origin: LinkPreview, message: "unsupported response"}
+    end
   end
 
   defp collect_data(page, parsers, body) do

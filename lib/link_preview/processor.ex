@@ -11,12 +11,12 @@ defmodule LinkPreview.Processor do
   @spec call(String.t) :: LinkPreview.success | LinkPreview.failure
   def call(url) do
     case Requests.head(url) do
-      %Tesla.Env{headers: %{"content-type" => "text/html" <> _}} ->
+      %Tesla.Env{url: final_url, headers: %{"content-type" => "text/html" <> _}} ->
         parsers = Application.get_env(:link_preview, :parsers, [Opengraph, Html])
 
-        do_call(url, parsers)
-      %Tesla.Env{headers: %{"content-type" => "image/" <> _}} ->
-        do_image_call(url, [Image])
+        do_call(url, final_url, parsers)
+      %Tesla.Env{url: final_url, headers: %{"content-type" => "image/" <> _}} ->
+        do_image_call(url, final_url, [Image])
       _ ->
         {:error, %LinkPreview.Error{}}
     end
@@ -35,17 +35,17 @@ defmodule LinkPreview.Processor do
     end
   end
 
-  defp do_image_call(url, parsers) do
+  defp do_image_call(url, final_url, parsers) do
     url
-    |> Page.new()
+    |> Page.new(final_url)
     |> collect_data(parsers, nil)
   end
 
-  defp do_call(url, parsers) do
+  defp do_call(url, final_url, parsers) do
     %Tesla.Env{status: 200, body: body} = Requests.get(url)
 
     url
-    |> Page.new()
+    |> Page.new(final_url)
     |> collect_data(parsers, body)
   end
 

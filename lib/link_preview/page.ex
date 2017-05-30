@@ -26,18 +26,16 @@ defmodule LinkPreview.Page do
   @doc """
     Initializes Page struct based on original url provided by user
   """
-  @spec new(String.t) :: t
-  def new(original_url) do
+  @spec new(String.t, String.t) :: t
+  def new(original_url, final_url) do
     %__MODULE__{
       original_url: original_url,
-      website_url: website_url(original_url)
+      website_url: website_url(final_url)
     }
   end
 
-  defp website_url(original_url) do
-    final_location = LinkPreview.Requests.final_location(original_url)
-
-    (final_location || original_url)
+  defp website_url(final_url) do
+    final_url
     |> remove_suffix
     |> remove_prefix
   end

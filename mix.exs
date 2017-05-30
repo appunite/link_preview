@@ -1,7 +1,7 @@
 defmodule LinkPreview.Mixfile do
   use Mix.Project
 
-  @version "1.0.0"
+  @version "1.0.1"
 
   def project do
     [
@@ -64,7 +64,7 @@ defmodule LinkPreview.Mixfile do
     [
       #required
       {:floki, "~> 0.10.0"},
-      {:tesla, "~> 0.6.0"},
+      {:tesla, "~> 0.7.1"},
 
       #optional
       {:html_entities, "~> 0.2", optional: true},

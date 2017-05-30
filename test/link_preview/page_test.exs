@@ -1,8 +1,6 @@
 defmodule LinkPreview.PageTest do
   use LinkPreview.Case
-  alias LinkPreview.{Page, Requests}
-
-  import Mock
+  alias LinkPreview.Page
 
   @valid_urls [
     "http://www.example.com/path",
@@ -25,15 +23,13 @@ defmodule LinkPreview.PageTest do
     "example.com"
   ]
 
-  describe "new" do
+  describe "new/2" do
     for url <- @valid_urls do
       test "returned page has proper website_url for valid url: #{url}" do
-        with_mock Requests, [final_location: fn(url) -> url end] do
-          assert %{
-            original_url: unquote(url),
-            website_url: "example.com"
-          } = Page.new(unquote(url))
-        end
+        assert %{
+          original_url: unquote(url),
+          website_url: "example.com"
+        } = Page.new(unquote(url), unquote(url))
       end
     end
   end

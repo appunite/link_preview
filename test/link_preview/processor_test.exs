@@ -31,6 +31,29 @@ defmodule LinkPreview.ProcessorTest do
     end
   end
 
+  describe "call when http client returns error on" do
+    test "head" do
+      with_mock LinkPreview.Requests, [:passthrough], [
+        head: fn(_)-> {:error, %Tesla.Error{message: "adapter error: :econnrefused"}} end
+      ] do
+        Application.put_env(:link_preview, :parsers, [Opengraph, Html, MissingOne])
+
+        assert {:error, %LinkPreview.Error{}} = LinkPreview.Processor.call(@httparrot <> "/image")
+      end
+    end
+
+    test "get" do
+      with_mock LinkPreview.Requests, [:passthrough], [
+        get:  fn(_)-> {:error, %Tesla.Error{message: "adapter error: :econnrefused"}} end,
+        head: fn(_)-> {:ok, %Tesla.Env{status: 200, headers: %{"content-type" => "text/html"}}} end
+      ] do
+        Application.put_env(:link_preview, :parsers, [Opengraph, Html, MissingOne])
+
+        assert {:error, %LinkPreview.Error{}} = LinkPreview.Processor.call(@httparrot <> "/image")
+      end
+    end
+  end
+
   defp reset_defaults(opts) do
     on_exit fn ->
       Application.put_env(:link_preview, :parsers, nil)

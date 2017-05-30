@@ -18,7 +18,7 @@ defmodule LinkPreview.Processor do
       %Tesla.Env{url: final_url, headers: %{"content-type" => "image/" <> _}} ->
         do_image_call(url, final_url, [Image])
       _ ->
-        {:error, %LinkPreview.Error{}}
+        %LinkPreview.Error{}
     end
     |> to_tuple()
   catch

@@ -1,7 +1,7 @@
 defmodule LinkPreview.Mixfile do
   use Mix.Project
 
-  @version "1.0.1"
+  @version "1.0.2"
 
   def project do
     [
@@ -53,7 +53,7 @@ defmodule LinkPreview.Mixfile do
     [applications: applications(Mix.env)]
   end
 
-  def applications(:all),  do: [:floki, :logger, :tesla]
+  def applications(:all),  do: [:floki, :inets, :logger, :tesla]
   def applications(:test), do: applications(:all) ++ [:httparrot]
   def applications(_),     do: applications(:all)
 

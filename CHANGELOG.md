@@ -1,5 +1,9 @@
 # Changelog
 
+# 1.0.2
+
+* Added :inets to application list to ensure it's started
+
 # 1.0.1
 
 * Upgraded Tesla version

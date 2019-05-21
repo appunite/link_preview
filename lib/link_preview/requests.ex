@@ -4,8 +4,7 @@ defmodule LinkPreview.Requests do
   """
   use Tesla, docs: false, only: ~w(get head)a
 
-  adapter :httpc, [body_format: :binary]
-  plug Tesla.Middleware.Tuples
+  adapter Tesla.Adapter.Httpc, body_format: :binary
   plug Tesla.Middleware.BaseUrl, "http://"
   plug Tesla.Middleware.DecompressResponse
   plug Tesla.Middleware.FollowRedirects
@@ -13,13 +12,17 @@ defmodule LinkPreview.Requests do
   @doc """
     Check if given url leads to image.
   """
-  @spec image?(String.t) :: boolean
+  @spec image?(String.t()) :: boolean
   def image?(url) do
     case head(url) do
-      {:ok, %Tesla.Env{status: 200, headers: headers}} ->
-        String.match?(headers["content-type"], ~r/\Aimage\//)
+      {:ok, %Tesla.Env{status: 200} = env} ->
+        env
+        |> Tesla.get_header("content-type")
+        |> String.match?(~r/\Aimage\//)
+
       {:ok, %Tesla.Env{}} ->
         false
+
       {:error, %Tesla.Error{}} ->
         false
     end

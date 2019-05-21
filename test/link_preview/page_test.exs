@@ -27,9 +27,9 @@ defmodule LinkPreview.PageTest do
     for url <- @valid_urls do
       test "returned page has proper website_url for valid url: #{url}" do
         assert %{
-          original_url: unquote(url),
-          website_url: "example.com"
-        } = Page.new(unquote(url), unquote(url))
+                 original_url: unquote(url),
+                 website_url: "example.com"
+               } = Page.new(unquote(url), unquote(url))
       end
     end
   end

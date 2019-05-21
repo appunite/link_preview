@@ -17,7 +17,10 @@ defmodule LinkPreview.Parsers.OpengraphTest do
 
   describe "description" do
     test "optimistic case" do
-      assert Opengraph.description(@page, @opengraph) == %Page{@page | description: "Opengraph Test Description"}
+      assert Opengraph.description(@page, @opengraph) == %Page{
+               @page
+               | description: "Opengraph Test Description"
+             }
     end
 
     test "pessimistic case" do
@@ -28,9 +31,9 @@ defmodule LinkPreview.Parsers.OpengraphTest do
   describe "images" do
     test "optimistic case" do
       assert Opengraph.images(@page, @opengraph).images == [
-        %{url: "http://example.com/images/og1.jpg"},
-        %{url: "http://example.com/images/og2.jpg"}
-      ]
+               %{url: "http://example.com/images/og1.jpg"},
+               %{url: "http://example.com/images/og2.jpg"}
+             ]
     end
 
     test "pessimistic case" do

@@ -25,22 +25,22 @@ defmodule LinkPreview.Parsers.Basic do
       @doc """
         For more details see `LinkPreview.Parsers.Basic` moduledoc
       """
-      @spec title(Page.t, String.t) :: Page.t
+      @spec title(Page.t(), String.t()) :: Page.t()
       def title(%Page{} = page, body), do: page
 
       @doc """
         For more details see `LinkPreview.Parsers.Basic` moduledoc
       """
-      @spec description(Page.t, String.t) :: Page.t
+      @spec description(Page.t(), String.t()) :: Page.t()
       def description(%Page{} = page, body), do: page
 
       @doc """
         For more details see `LinkPreview.Parsers.Basic` moduledoc
       """
-      @spec images(Page.t, String.t) :: Page.t
+      @spec images(Page.t(), String.t()) :: Page.t()
       def images(%Page{} = page, body), do: page
 
-      defoverridable [title: 2, description: 2, images: 2]
+      defoverridable title: 2, description: 2, images: 2
     end
   end
 

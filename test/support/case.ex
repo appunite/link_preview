@@ -8,7 +8,6 @@ defmodule LinkPreview.Case do
       @opengraph File.read!("test/support/fixtures/opengraph_example.html")
       @html File.read!("test/support/fixtures/html_example.html")
       @image_spam File.read!("test/support/fixtures/html_image_spam_example.html")
-
     end
   end
 end

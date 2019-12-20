@@ -17,9 +17,9 @@ defmodule LinkPreview.Parsers.Html do
   def title(page, body) do
     title =
       body
-      |> Floki.parse
+      |> Floki.parse()
       |> Floki.find("title")
-      |> List.first
+      |> List.first()
       |> get_text
 
     %Page{page | title: title}
@@ -66,7 +66,7 @@ defmodule LinkPreview.Parsers.Html do
   def images(page, body) do
     images =
       body
-      |> Floki.parse
+      |> Floki.parse()
       |> Floki.attribute("img", "src")
       |> Enum.map(&String.trim(&1))
       |> maybe_limit
@@ -74,23 +74,25 @@ defmodule LinkPreview.Parsers.Html do
       |> maybe_force_url_schema
       |> maybe_validate
       |> maybe_filter_small_images
-      |> Enum.map(&(%{url: &1}))
+      |> Enum.map(&%{url: &1})
 
     %Page{page | images: images}
   end
 
   defp get_text(nil), do: nil
+
   defp get_text(choosen) do
-    choosen |> Floki.text |> maybe_friendly_string()
+    choosen |> Floki.text() |> maybe_friendly_string()
   end
 
   defp search_h(_body, 7), do: nil
+
   defp search_h(body, level) do
     description =
       body
-      |> Floki.parse
+      |> Floki.parse()
       |> Floki.find("h#{level}")
-      |> List.first
+      |> List.first()
       |> get_text
 
     case description do
@@ -104,10 +106,13 @@ defmodule LinkPreview.Parsers.Html do
     cond do
       Application.get_env(:link_preview, :force_images_absolute_url) ->
         urls |> Enum.take(50)
+
       Application.get_env(:link_preview, :force_images_url_schema) ->
         urls |> Enum.take(50)
+
       Application.get_env(:link_preview, :filter_small_images) ->
         urls |> Enum.take(50)
+
       true ->
         urls
     end
@@ -117,12 +122,15 @@ defmodule LinkPreview.Parsers.Html do
     case Application.get_env(:link_preview, :filter_small_images) do
       nil ->
         urls
+
       false ->
         urls
+
       true ->
         urls
         |> ParallelHelper.map(&filter_small_image(&1, 100))
         |> Enum.reject(&is_nil(&1))
+
       value ->
         urls
         |> ParallelHelper.map(&filter_small_image(&1, value))
@@ -131,22 +139,22 @@ defmodule LinkPreview.Parsers.Html do
   end
 
   defp filter_small_image(url, min_size) do
-    with                                         true <- Code.ensure_loaded?(Mogrify),
-                                                 true <- Code.ensure_loaded?(Tempfile),
-                        {:ok, %Tesla.Env{body: body}} <- Requests.get(url),
-                                 {:ok, tempfile_path} <- Tempfile.random("link_preview"),
-                                                  :ok <- File.write(tempfile_path, body),
-                               %Mogrify.Image{} = raw <- Mogrify.open(tempfile_path),
+    with true <- Code.ensure_loaded?(Mogrify),
+         true <- Code.ensure_loaded?(Tempfile),
+         {:ok, %Tesla.Env{body: body}} <- Requests.get(url),
+         {:ok, tempfile_path} <- Tempfile.random("link_preview"),
+         :ok <- File.write(tempfile_path, body),
+         %Mogrify.Image{} = raw <- Mogrify.open(tempfile_path),
          %Mogrify.Image{width: width, height: height} <- Mogrify.verbose(raw),
-                                    smaller_dimension <- Enum.min([width, height]),
-                                                 true <- smaller_dimension > min_size
-    do
+         smaller_dimension <- Enum.min([width, height]),
+         true <- smaller_dimension > min_size do
       url
     else
       _ -> nil
     end
   catch
-    #filter url if mogrify cannot collect its size data
-    _, _ -> nil
+    # filter url if mogrify cannot collect its size data
+    _, _ ->
+      nil
   end
 end

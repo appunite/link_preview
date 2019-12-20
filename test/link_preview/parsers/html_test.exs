@@ -30,12 +30,12 @@ defmodule LinkPreview.Parsers.HtmlTest do
   describe "images" do
     test "optimistic case without additional options" do
       assert Html.images(@page, @html).images == [
-        %{url: "http://example.com/images/html1.jpg"},
-        %{url: "example.com/images/html2.jpg"},
-        %{url: "/images/html3.jpg"},
-        %{url: "images/html4.jpg"},
-        %{url: "https://example.com/images/html5.jpg"}
-      ]
+               %{url: "http://example.com/images/html1.jpg"},
+               %{url: "example.com/images/html2.jpg"},
+               %{url: "/images/html3.jpg"},
+               %{url: "images/html4.jpg"},
+               %{url: "https://example.com/images/html5.jpg"}
+             ]
     end
 
     test "doesn't limit images" do
@@ -71,12 +71,12 @@ defmodule LinkPreview.Parsers.HtmlTest do
   end
 
   defp reset_defaults(opts) do
-    on_exit fn ->
+    on_exit(fn ->
       Application.put_env(:link_preview, :friendly_strings, true)
       Application.put_env(:link_preview, :force_images_absolute_url, false)
       Application.put_env(:link_preview, :force_images_url_schema, false)
       Application.put_env(:link_preview, :filter_small_images, false)
-    end
+    end)
 
     {:ok, opts}
   end

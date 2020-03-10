@@ -3,14 +3,14 @@ defmodule LinkPreview.Parsers.UtilTest do
   alias LinkPreview.Parsers.Util
 
   defp reset_defaults(opts) do
-    on_exit fn ->
+    on_exit(fn ->
       Application.put_env(:link_preview, :friendly_strings, true)
       Application.put_env(:link_preview, :force_images_absolute_url, false)
       Application.put_env(:link_preview, :force_images_url_schema, false)
       Application.put_env(:link_preview, :filter_small_images, false)
 
       Application.put_env(:link_preview, :code_module, Code)
-    end
+    end)
 
     {:ok, opts}
   end
@@ -68,11 +68,15 @@ defmodule LinkPreview.Parsers.UtilTest do
     end
 
     test "absolute url with http schema", %{page: page} do
-      assert Util.maybe_force_absolute_url(["http://example.com/img"], page) == ["http://example.com/img"]
+      assert Util.maybe_force_absolute_url(["http://example.com/img"], page) == [
+               "http://example.com/img"
+             ]
     end
 
     test "absolute url with https schema", %{page: page} do
-      assert Util.maybe_force_absolute_url(["https://example.com/img"], page) == ["https://example.com/img"]
+      assert Util.maybe_force_absolute_url(["https://example.com/img"], page) == [
+               "https://example.com/img"
+             ]
     end
 
     test "absolute url without schema", %{page: page} do
@@ -104,7 +108,9 @@ defmodule LinkPreview.Parsers.UtilTest do
     end
 
     test "absolute url with https schema" do
-      assert Util.maybe_force_url_schema(["https://example.com/img"]) == ["https://example.com/img"]
+      assert Util.maybe_force_url_schema(["https://example.com/img"]) == [
+               "https://example.com/img"
+             ]
     end
 
     test "absolute url without schema" do

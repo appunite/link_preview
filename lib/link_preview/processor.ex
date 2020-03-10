@@ -8,32 +8,48 @@ defmodule LinkPreview.Processor do
   @doc """
     Takes url and returns result of processing.
   """
-  @spec call(String.t) :: LinkPreview.success | LinkPreview.failure
+  @spec call(String.t()) :: LinkPreview.success() | LinkPreview.failure()
   def call(url) do
-    case Requests.head(url) do
-      {:ok, %Tesla.Env{status: 200, url: final_url, headers: %{"content-type" => "text/html" <> _}}} ->
+    url
+    |> Requests.head()
+    |> case do
+      {:ok, response} ->
+        {:ok, response, response |> Tesla.get_header("content-type")}
+
+      {:error, error} ->
+        {:error, error, nil}
+    end
+    |> case do
+      {:ok, %Tesla.Env{status: 200, url: final_url}, "text/html" <> _} ->
         parsers = Application.get_env(:link_preview, :parsers, [Opengraph, Html])
 
         do_call(url, final_url, parsers)
-      {:ok, %Tesla.Env{status: 200, url: final_url, headers: %{"content-type" => "image/" <> _}}} ->
+
+      {:ok, %Tesla.Env{status: 200, url: final_url}, "image/" <> _} ->
         do_image_call(url, final_url, [Image])
-      {:ok, _} ->
+
+      {:ok, _, _} ->
         %LinkPreview.Error{origin: LinkPreview, message: "unsupported response"}
-      {:error, %{__struct__: origin, message: message}} ->
-        %LinkPreview.Error{origin: origin, message: message}
+
+      {:error, reason, _} ->
+        %LinkPreview.Error{origin: 123, message: reason}
     end
     |> to_tuple()
   catch
     _, %{__struct__: origin, message: message} ->
       {:error, %LinkPreview.Error{origin: origin, message: message}}
+
     _, _ ->
       {:error, %LinkPreview.Error{origin: :unknown}}
   end
 
   defp to_tuple(result) do
     case result do
-      %Page{}              -> {:ok, result}
-      %LinkPreview.Error{} -> {:error, result}
+      %Page{} ->
+        {:ok, result}
+
+      %LinkPreview.Error{} ->
+        {:error, result}
     end
   end
 
@@ -49,6 +65,7 @@ defmodule LinkPreview.Processor do
         url
         |> Page.new(final_url)
         |> collect_data(parsers, body)
+
       _ ->
         %LinkPreview.Error{origin: LinkPreview, message: "unsupported response"}
     end
@@ -85,5 +102,4 @@ defmodule LinkPreview.Processor do
       {:halt, page}
     end
   end
-
 end

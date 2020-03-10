@@ -15,12 +15,13 @@ defmodule LinkPreview.Parsers.Util do
     * If HtmlEntities optional package is loaded then decodes html entities,
       e.g. &quot
   """
-  @spec maybe_friendly_string(String.t | nil) :: String.t | nil
+  @spec maybe_friendly_string(String.t() | nil) :: String.t() | nil
   def maybe_friendly_string(nil), do: nil
+
   def maybe_friendly_string(text) do
     if Application.get_env(:link_preview, :friendly_strings, true) do
       text
-      |> String.trim
+      |> String.trim()
       |> String.replace(~r/\n|\r|\r\n/, " ")
       |> String.replace(~r/\ +/, " ")
       |> decode_html()
@@ -83,10 +84,13 @@ defmodule LinkPreview.Parsers.Util do
     cond do
       Application.get_env(:link_preview, :force_images_absolute_url) ->
         urls |> validate_images
+
       Application.get_env(:link_preview, :force_images_url_schema) ->
         urls |> validate_images
+
       Application.get_env(:link_preview, :filter_small_images) ->
         urls |> validate_images
+
       true ->
         urls
     end
@@ -113,10 +117,10 @@ defmodule LinkPreview.Parsers.Util do
     end
   end
 
-  defp force_schema("http://" <> _ = url),  do: url
+  defp force_schema("http://" <> _ = url), do: url
   defp force_schema("https://" <> _ = url), do: url
-  defp force_schema("//" <> _ = url),       do: "http:" <> url
-  defp force_schema(url),                   do: "http://" <> url
+  defp force_schema("//" <> _ = url), do: "http:" <> url
+  defp force_schema(url), do: "http://" <> url
 
   defp validate_images(urls) do
     urls

@@ -71,7 +71,7 @@ defmodule LinkPreview.Parsers.Opengraph do
       |> maybe_force_absolute_url(page)
       |> maybe_force_url_schema
       |> maybe_validate
-      |> Enum.map(&(%{url: &1}))
+      |> Enum.map(&%{url: &1})
 
     %Page{page | images: images}
   end

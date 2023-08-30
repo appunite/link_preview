@@ -4,7 +4,7 @@ defmodule LinkPreview.Requests do
   """
   use Tesla, docs: false, only: ~w(get head)a
 
-  adapter Tesla.Adapter.Httpc, body_format: :binary
+  adapter Tesla.Adapter.Finch, name: LinkPreview.Finch, body_format: :binary
   plug Tesla.Middleware.BaseUrl, "http://"
   plug Tesla.Middleware.DecompressResponse
   plug Tesla.Middleware.FollowRedirects

@@ -50,10 +50,10 @@ defmodule LinkPreview.Mixfile do
   end
 
   def application do
-    [applications: applications(Mix.env())]
+    [applications: applications(Mix.env()), mod: {LinkPreview.Application, []}]
   end
 
-  def applications(:all), do: [:floki, :inets, :logger, :tesla]
+  def applications(:all), do: [:floki, :inets, :logger, :tesla, :telemetry]
   def applications(:test), do: applications(:all) ++ [:httparrot]
   def applications(_), do: applications(:all)
 
@@ -63,17 +63,18 @@ defmodule LinkPreview.Mixfile do
   defp deps do
     [
       # required
-      {:floki, "~> 0.34"},
+      {:floki, "~> 0.30"},
+      {:finch, "~> 0.10"},
       {:tesla, "~> 1.5"},
 
       # optional
       {:html_entities, "~> 0.5", optional: true},
-      {:mogrify, "~> 0.9", optional: true},
+      {:mogrify, "~> 0.5", optional: true},
       {:tempfile, "~> 0.1", optional: true},
 
       # testing/docs
-      {:excoveralls, "~> 0.15", only: :test},
-      {:ex_doc, "~> 0.29", only: :dev},
+      {:excoveralls, "~> 0.10", only: :test},
+      {:ex_doc, "~> 0.20", only: :dev},
       {:httparrot, "~> 1.3", only: :test},
       {:mock, "~> 0.3", only: :test}
     ]

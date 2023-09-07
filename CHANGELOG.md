@@ -1,5 +1,11 @@
 # Changelog
 
+# 1.0.4
+* Changed Tesla adapter from httpc to Finch
+
+# 1.0.3
+* Bumped dependency versions
+
 # 1.0.2
 
 * Added :inets to application list to ensure it's started

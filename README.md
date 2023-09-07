@@ -13,7 +13,7 @@ LinkPreview is a package that tries to receive meta information from given http(
   ```elixir
   def deps do
     [
-      {:link_preview, "~> 1.0.1"}
+      {:link_preview, "~> 1.0"}
     ]
   end
   ```

@@ -26,7 +26,8 @@ defmodule LinkPreview.Mixfile do
       test_coverage: [
         tool: ExCoveralls
       ],
-      version: @version
+      version: @version,
+      xref: [exclude: [HtmlEntities, Mogrify, Tempfile]]
     ]
   end
 

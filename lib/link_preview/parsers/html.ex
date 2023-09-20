@@ -17,7 +17,7 @@ defmodule LinkPreview.Parsers.Html do
   def title(page, body) do
     title =
       body
-      |> Floki.parse()
+      |> Floki.parse_document()
       |> Floki.find("title")
       |> List.first()
       |> get_text
@@ -66,7 +66,7 @@ defmodule LinkPreview.Parsers.Html do
   def images(page, body) do
     images =
       body
-      |> Floki.parse()
+      |> Floki.parse_document()
       |> Floki.attribute("img", "src")
       |> Enum.map(&String.trim(&1))
       |> maybe_limit
@@ -90,7 +90,7 @@ defmodule LinkPreview.Parsers.Html do
   defp search_h(body, level) do
     description =
       body
-      |> Floki.parse()
+      |> Floki.parse_document()
       |> Floki.find("h#{level}")
       |> List.first()
       |> get_text

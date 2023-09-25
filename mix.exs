@@ -26,7 +26,8 @@ defmodule LinkPreview.Mixfile do
       test_coverage: [
         tool: ExCoveralls
       ],
-      version: @version
+      version: @version,
+      xref: [exclude: [HtmlEntities, Mogrify, Tempfile]]
     ]
   end
 
@@ -69,7 +70,7 @@ defmodule LinkPreview.Mixfile do
       # optional
       {:html_entities, "~> 0.5", optional: true},
       {:mogrify, "~> 0.9", optional: true},
-      {:tempfile, "~> 0.1", optional: true},
+      {:tempfile, github: "E-MetroTel/tempfile", optional: true, branch: "elixir-11"},
 
       # testing/docs
       {:excoveralls, "~> 0.15", only: :test},

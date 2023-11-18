@@ -144,8 +144,8 @@ defmodule LinkPreview.Parsers.Html do
          {:ok, %Tesla.Env{body: body}} <- Requests.get(url),
          {:ok, tempfile_path} <- Tempfile.random("link_preview"),
          :ok <- File.write(tempfile_path, body),
-         %Mogrify.Image{} = raw <- Mogrify.open(tempfile_path),
-         %Mogrify.Image{width: width, height: height} <- Mogrify.verbose(raw),
+         %{__struct__: Mogrify.Image} = raw <- Mogrify.open(tempfile_path),
+         %{__struct__: Mogrify.Image, width: width, height: height} <- Mogrify.verbose(raw),
          smaller_dimension <- Enum.min([width, height]),
          true <- smaller_dimension > min_size do
       url

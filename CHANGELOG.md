@@ -1,5 +1,8 @@
 # Changelog
 
+# 1.0.5
+* Prevent compilation error when optional Mogrify isn't present
+
 # 1.0.4
 * Changed Tesla adapter from httpc to Finch
 

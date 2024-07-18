@@ -5,7 +5,7 @@ defmodule LinkPreview.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      {Finch, name: LinkPreview.Finch, pools: %{default: [protocols: :http1]}}
+      {Finch, name: LinkPreview.Finch, pools: %{default: [protocols: [:http1]]}}
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: LinkPreview.Supervisor)

@@ -64,7 +64,7 @@ defmodule LinkPreview.Mixfile do
     [
       # required
       {:floki, "~> 0.30"},
-      {:finch, "~> 0.10"},
+      {:finch, "~> 0.17"},
       {:tesla, "~> 1.5"},
 
       # optional

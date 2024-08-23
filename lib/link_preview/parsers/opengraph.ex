@@ -65,7 +65,7 @@ defmodule LinkPreview.Parsers.Opengraph do
     images =
       body
       |> Floki.parse()
-      |> Floki.find("meta[property^=\"og:image\"]")
+      |> Floki.find("meta[property=\"og:image\"]")
       |> Floki.attribute("content")
       |> Enum.map(&String.trim(&1))
       |> maybe_force_absolute_url(page)
